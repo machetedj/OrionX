@@ -1,0 +1,4 @@
+<?php
+declare(strict_types=1);
+use App\Core\Application;use App\Security\DeviceCredentialCipher;
+require dirname(__DIR__).'/vendor/autoload.php';$serverId=(int)($argv[1]??0);$ips=array_values(array_filter(array_map('trim',explode(',',$argv[2]??'')),fn($ip)=>filter_var($ip,FILTER_VALIDATE_IP)));if($serverId<1||!$ips)exit("Uso: php scripts/create-node-credentials.php SERVER_ID ip1,ip2\n");$app=Application::boot(dirname(__DIR__));$db=$app->get(\PDO::class);$secret=rtrim(strtr(base64_encode(random_bytes(32)),'+/','-_'),'=');$key=bin2hex(random_bytes(8));$cipher=$app->get(DeviceCredentialCipher::class);$s=$db->prepare('UPDATE servers SET api_key_id=?,api_secret_ciphertext=?,allowed_ips=? WHERE id=?');$s->execute([$key,$cipher->encrypt($secret),json_encode($ips,JSON_THROW_ON_ERROR),$serverId]);if($s->rowCount()!==1)exit("Servidor no encontrado o credenciales sin cambios.\n");echo "NODE_KEY={$key}\nNODE_SECRET={$secret}\nEstas credenciales se muestran una sola vez.\n";

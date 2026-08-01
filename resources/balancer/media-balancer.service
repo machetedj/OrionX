@@ -1,0 +1,16 @@
+[Unit]
+Description=Media Panel balancer agent
+After=network-online.target nginx.service redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/php /opt/media-balancer/agent.php
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/etc/letsencrypt /var/lib/letsencrypt /var/log/letsencrypt /etc/nginx
+
+[Install]
+WantedBy=multi-user.target

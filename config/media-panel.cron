@@ -1,0 +1,1 @@
+* * * * * media-panel /usr/bin/php /opt/licensed-media-panel/scripts/scheduler.php >> /opt/licensed-media-panel/storage/logs/scheduler.log 2>&1

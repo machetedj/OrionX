@@ -1,0 +1,8 @@
+[mysqld]
+bind-address = 127.0.0.1
+skip-name-resolve
+local-infile = 0
+symbolic-links = 0
+# La instalación base solo escucha en loopback. Si se habilita acceso remoto,
+# configure certificados y active require-secure-transport antes de cambiar bind-address.
+log_warnings = 2
