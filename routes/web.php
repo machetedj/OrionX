@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BouquetController,CertificateController,CompatibilityController,DashboardController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -48,6 +48,9 @@ $r->get('/movies/tmdb/details',[MovieController::class,'tmdbDetails'],[AuthMiddl
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
 $r->get('/security/ip-blocks',[SecurityController::class,'ips'],[AuthMiddleware::class]);
+$r->get('/backups',[BackupController::class,'index'],[AuthMiddleware::class]);
+$r->post('/backups/destinations',[BackupController::class,'destination'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/backups/run',[BackupController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/security/ip-blocks',[SecurityController::class,'add'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/security/ip-blocks/remove',[SecurityController::class,'remove'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);
