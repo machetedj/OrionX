@@ -58,6 +58,7 @@ final readonly class SshProvisioner
             $assets = dirname(__DIR__, 2) . '/resources/balancer';
             $bundleFiles = [
                 'agent.php' => $assets . '/agent.php',
+                'media-task.php' => $assets . '/media-task.php',
                 'media-balancer.service' => $assets . '/media-balancer.service',
                 'media-balancer.timer' => $assets . '/media-balancer.timer',
                 'nginx-balancer.conf' => $assets . '/nginx-balancer.conf',

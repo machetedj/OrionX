@@ -86,6 +86,22 @@ final readonly class DeploymentService
         return $id;
     }
 
+    public function authorizeCutover(int $serverId): void
+    {
+        $statement=$this->db->prepare('SELECT legacy_origin,cutover_authorized_at FROM servers WHERE id=?');
+        $statement->execute([$serverId]);$server=$statement->fetch();
+        if(!$server||$server['legacy_origin']!=='xui_one')throw new RuntimeException('Este servidor no fue importado desde XUI One.');
+        if($server['cutover_authorized_at']!==null)return;
+        $statement=$this->db->prepare("SELECT r.id,r.status,(SELECT COUNT(*) FROM media_symlink_inventory i WHERE i.run_id=r.id AND i.valid=0) invalid_links,(SELECT COUNT(*) FROM media_symlink_inventory i WHERE i.run_id=r.id) total_links FROM media_remote_runs r WHERE r.server_id=? AND r.operation='inventory' ORDER BY r.id DESC LIMIT 1");
+        $statement->execute([$serverId]);$inventory=$statement->fetch();
+        if(!$inventory||$inventory['status']!=='completed')throw new RuntimeException('Ejecuta primero el inventario de enlaces desde Bibliotecas.');
+        if((int)$inventory['invalid_links']>0)throw new RuntimeException('Hay enlaces fuera de las bibliotecas autorizadas. Corrígelos antes del reemplazo.');
+        $statement=$this->db->prepare("SELECT COUNT(*) FROM media_remote_runs WHERE server_id=? AND status IN ('pending','running')");$statement->execute([$serverId]);
+        if((int)$statement->fetchColumn()>0)throw new RuntimeException('Espera a que terminen las operaciones multimedia pendientes.');
+        $this->db->prepare('UPDATE servers SET cutover_authorized_at=NOW() WHERE id=?')->execute([$serverId]);
+        $this->audit->record('server.xui_cutover_authorized','server',$serverId,['inventory_run_id'=>(int)$inventory['id'],'links'=>(int)$inventory['total_links']]);
+    }
+
     private function serverHost(int $id): string
     {
         $statement = $this->db->prepare("SELECT COALESCE(NULLIF(private_ip,''),public_ip) FROM servers WHERE id=?");

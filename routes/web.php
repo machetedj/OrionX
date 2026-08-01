@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -30,6 +30,10 @@ $r->get('/libraries',[MediaLibraryController::class,'index'],[AuthMiddleware::cl
 $r->post('/libraries',[MediaLibraryController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/scan',[MediaLibraryController::class,'scan'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/remote',[MediaLibraryController::class,'remote'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/movies',[MovieController::class,'index'],[AuthMiddleware::class]);
+$r->post('/movies',[MovieController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/movies/tmdb',[MovieController::class,'tmdb'],[AuthMiddleware::class]);
+$r->get('/movies/tmdb/details',[MovieController::class,'tmdbDetails'],[AuthMiddleware::class]);
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);
@@ -39,6 +43,7 @@ $r->get('/deployments',[DeploymentController::class,'index'],[AuthMiddleware::cl
 $r->post('/deployments/fingerprint',[DeploymentController::class,'fingerprint'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/deployments/credentials',[DeploymentController::class,'credentials'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/deployments/run',[DeploymentController::class,'deploy'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/deployments/cutover',[DeploymentController::class,'cutover'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/mag-devices',[MagDeviceController::class,'index'],[AuthMiddleware::class]);
 $r->post('/mag-devices',[MagDeviceController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/mag-devices/status',[MagDeviceController::class,'status'],[AuthMiddleware::class,CsrfMiddleware::class]);

@@ -52,6 +52,7 @@ install_latest_ffmpeg; restore_policy; trap - EXIT
 id media-balancer >/dev/null 2>&1 || useradd --system --home "$INSTALL_DIR" --shell /usr/sbin/nologin media-balancer
 install -d -o root -g media-balancer -m 0750 "$INSTALL_DIR"
 install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/agent.php" "$INSTALL_DIR/agent.php"
+install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/media-task.php" "$INSTALL_DIR/media-task.php"
 install -o root -g media-balancer -m 0640 "$BUNDLE_DIR/agent.env" "$INSTALL_DIR/agent.env"
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.service" /etc/systemd/system/media-balancer.service
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.timer" /etc/systemd/system/media-balancer.timer
