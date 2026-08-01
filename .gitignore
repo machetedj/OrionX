@@ -7,3 +7,5 @@
 .phpunit.cache/
 .phpunit.result.cache
 /OrionX/
+/backup_*.sql
+/backup_*.sql.gz

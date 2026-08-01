@@ -57,6 +57,12 @@ final readonly class DeploymentService
 
     public function request(int $serverId, string $type): int
     {
+        $legacy = $this->db->prepare('SELECT legacy_origin,cutover_authorized_at FROM servers WHERE id=?');
+        $legacy->execute([$serverId]);
+        $legacy = $legacy->fetch();
+        if ($legacy && $legacy['legacy_origin'] === 'xui_one' && $legacy['cutover_authorized_at'] === null) {
+            throw new RuntimeException('Protección activa: este servidor todavía opera con XUI One. Usa un balanceador paralelo para evitar cortes.');
+        }
         if (!in_array($type, ['install', 'sync', 'update'], true)) {
             throw new RuntimeException('Tipo de despliegue inválido.');
         }
