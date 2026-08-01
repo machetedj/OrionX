@@ -52,7 +52,7 @@ final class Application
 
     public function run(): void
     {
-        try { $this->router->dispatch(Request::capture()); }
+        try { $request=Request::capture();$ip=(string)($request->server['REMOTE_ADDR']??'');if($this->get(\App\Services\IpBlockService::class)->blocked($ip)){http_response_code(403);header('Retry-After: 3600');echo 'Acceso bloqueado';return;}$this->router->dispatch($request); }
         catch (\Throwable $e) {
             $this->get(Logger::class)->error($e->getMessage(), ['exception'=>get_class($e)]);
             http_response_code(500);

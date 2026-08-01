@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -42,6 +42,9 @@ $r->get('/movies/tmdb',[MovieController::class,'tmdb'],[AuthMiddleware::class]);
 $r->get('/movies/tmdb/details',[MovieController::class,'tmdbDetails'],[AuthMiddleware::class]);
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
+$r->get('/security/ip-blocks',[SecurityController::class,'ips'],[AuthMiddleware::class]);
+$r->post('/security/ip-blocks',[SecurityController::class,'add'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/security/ip-blocks/remove',[SecurityController::class,'remove'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);
 $r->get('/certificates',[CertificateController::class,'index'],[AuthMiddleware::class]);
 $r->post('/certificates',[CertificateController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
