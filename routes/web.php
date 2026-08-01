@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -26,6 +26,9 @@ $r->post('/reseller/accounts/suspend',[ResellerPortalController::class,'suspend'
 $r->get('/live',[LiveChannelController::class,'index'],[AuthMiddleware::class]);
 $r->post('/live',[LiveChannelController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/live/source',[LiveChannelController::class,'source'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/libraries',[MediaLibraryController::class,'index'],[AuthMiddleware::class]);
+$r->post('/libraries',[MediaLibraryController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/libraries/scan',[MediaLibraryController::class,'scan'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);
