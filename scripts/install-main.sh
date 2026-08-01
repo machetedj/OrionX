@@ -218,6 +218,7 @@ cp config/media-panel.cron /etc/cron.d/media-panel
 chmod 0644 /etc/cron.d/media-panel
 install -o root -g root -m 0750 scripts/cert-helper.php /usr/local/sbin/media-panel-cert-helper
 install -o root -g root -m 0750 scripts/xui-sql-helper.php /usr/local/sbin/orionx-xui-sql-helper
+install -o root -g root -m 0750 scripts/db-firewall-helper.php /usr/local/sbin/orionx-db-firewall-helper
 install -o root -g root -m 0440 config/media-panel-sudoers /etc/sudoers.d/media-panel-certificates
 visudo -cf /etc/sudoers.d/media-panel-certificates
 ln -sfn /etc/nginx/sites-available/licensed-media-panel /etc/nginx/sites-enabled/licensed-media-panel
@@ -227,6 +228,7 @@ SSHD_PORT="$(sshd -T 2>/dev/null | awk '$1=="port"{print $2;exit}')"
 [[ "$SSHD_PORT" =~ ^[0-9]+$ ]] || SSHD_PORT=22
 ufw allow "${SSHD_PORT}/tcp"
 ufw allow 'Nginx Full'
+ufw deny 3306/tcp
 ufw --force enable
 
 nginx -t
