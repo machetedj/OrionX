@@ -1,5 +1,3 @@
 <?php
-declare(strict_types=1);
-namespace App\Middleware;
-use App\Core\{Request,Response};use App\Security\Auth;
-final class ResellerMiddleware { public function handle(Request $request): void { if(!Auth::id()||Auth::portal()!=='reseller')Response::redirect('/reseller/login'); } }
+declare(strict_types=1);namespace App\Middleware;use App\Core\{Request,Response};use App\Repositories\UserRepository;use App\Security\Auth;
+final readonly class ResellerMiddleware{public function __construct(private UserRepository $users){}public function handle(Request $request):void{$id=Auth::id();$user=$id?$this->users->byId($id):null;if(!$user||$user['status']!=='active'||Auth::portal()!=='reseller'){Auth::logout();Response::redirect('/reseller/login');}$_SESSION['permissions']=$this->users->permissions($id);$_SESSION['roles']=$this->users->roles($id);}}

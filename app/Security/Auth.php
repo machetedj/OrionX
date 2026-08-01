@@ -11,8 +11,8 @@ final readonly class Auth
         $user=$this->users->byLogin($email);
         if (!$user || $user['status']!=='active' || !$this->passwords->verify($password,$user['password_hash'])) return false;
         if($this->passwords->needsUpgrade($user['password_hash']))$this->users->upgradePassword((int)$user['id'],$password);
-        $roles=$this->users->roles((int)$user['id']);$reseller=(bool)array_intersect($roles,['reseller','subreseller']);
-        if(($portal==='reseller')!==$reseller)return false;
+        $roles=$this->users->roles((int)$user['id']);$reseller=$this->users->isReseller((int)$user['id']);$admin=$this->users->isAdmin((int)$user['id']);
+        if(($portal==='reseller'&&!$reseller)||($portal==='admin'&&!$admin))return false;
         session_regenerate_id(true); $_SESSION['user_id']=(int)$user['id']; $_SESSION['permissions']=$this->users->permissions((int)$user['id']);$_SESSION['roles']=$roles;$_SESSION['portal']=$portal; return true;
     }
     public static function id(): ?int { return isset($_SESSION['user_id'])?(int)$_SESSION['user_id']:null; }

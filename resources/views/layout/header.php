@@ -4,7 +4,7 @@
 <?php $groups=[
  ['label'=>'Dashboard','icon'=>'⌁','href'=>'/','items'=>[]],
  ['label'=>'Servidores','icon'=>'▤','items'=>[['Servidores','/servers'],['Instalar y actualizar','/deployments'],['Certificados TLS','/certificates'],['Bibliotecas y discos','/libraries']]],
- ['label'=>'Usuarios','icon'=>'♟','items'=>[['Administradores','/users'],['Revendedores','/resellers'],['Dispositivos MAG','/mag-devices']]],
+ ['label'=>'Usuarios','icon'=>'♟','items'=>[['Administradores','/users'],['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Dispositivos MAG','/mag-devices']]],
  ['label'=>'Líneas','icon'=>'▣','items'=>[['Cuentas finales','/accounts'],['Conexiones activas','/sessions'],['Packages','/packages']]],
  ['label'=>'Contenido','icon'=>'▶','items'=>[['Canales en vivo','/live'],['Ingest RTMP','/rtmp'],['Películas','/movies'],['EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Administrar bouquets','/bouquets'],['Administrar packages','/packages']]],

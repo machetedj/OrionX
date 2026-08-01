@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SessionController,SettingsController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SecurityGroupController,SessionController,SettingsController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -54,6 +54,7 @@ $r->get('/movies/tmdb/details',[MovieController::class,'tmdbDetails'],[AuthMiddl
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
 $r->get('/security/ip-blocks',[SecurityController::class,'ips'],[AuthMiddleware::class]);
+$r->get('/security/groups',[SecurityGroupController::class,'index'],[AuthMiddleware::class]);$r->post('/security/groups',[SecurityGroupController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/groups/delete',[SecurityGroupController::class,'delete'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/security/database',[DatabaseFirewallController::class,'index'],[AuthMiddleware::class]);
 $r->post('/security/database/add',[DatabaseFirewallController::class,'add'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/security/database/remove',[DatabaseFirewallController::class,'remove'],[AuthMiddleware::class,CsrfMiddleware::class]);
