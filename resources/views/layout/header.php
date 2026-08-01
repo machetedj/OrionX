@@ -4,7 +4,8 @@
 <?php $groups=[
  ['label'=>'Dashboard','icon'=>'⌁','href'=>'/','items'=>[]],
  ['label'=>'Servidores','icon'=>'▤','items'=>[['Servidores','/servers'],['Mover contenido','/servers/move-content'],['Instalar y actualizar','/deployments'],['Certificados TLS','/certificates'],['Bibliotecas y discos','/libraries']]],
- ['label'=>'Usuarios','icon'=>'♟','items'=>[['Administradores','/users'],['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Dispositivos MAG','/mag-devices']]],
+ ['label'=>'Usuarios','icon'=>'♟','items'=>[['Administradores','/users'],['Grupos de seguridad','/security/groups'],['Revendedores','/resellers']]],
+ ['label'=>'Dispositivos MAG','icon'=>'▣','href'=>'/mag-devices','items'=>[]],
  ['label'=>'Líneas','icon'=>'▣','items'=>[['Cuentas finales','/accounts'],['Conexiones activas','/sessions'],['Packages','/packages']]],
  ['label'=>'Contenido','icon'=>'▶','items'=>[['Canales en vivo','/live'],['Ingest RTMP','/rtmp'],['Películas','/movies'],['Edición masiva VOD','/media/bulk'],['Eliminación masiva VOD','/media/delete'],['EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Administrar bouquets','/bouquets'],['Administrar packages','/packages']]],
