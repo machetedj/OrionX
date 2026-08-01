@@ -22,7 +22,7 @@ final readonly class AccountService
         if($expires!==''&&!DateTimeImmutable::createFromFormat('Y-m-d\TH:i',$expires))throw new RuntimeException('Expiración inválida.');
         $country=strtoupper(trim((string)($input['allowed_country']??'')));if($country!==''&&!preg_match('/^[A-Z]{2}$/',$country))throw new RuntimeException('País inválido.');
         $ip=trim((string)($input['allowed_ip']??''));if($ip!==''&&!filter_var($ip,FILTER_VALIDATE_IP))throw new RuntimeException('IP inválida.');
-        $data=['reseller'=>null,'username'=>$username,'credential'=>$this->cipher->encrypt((string)($input['password']??'')),'status'=>'active','expires'=>$expires===''?null:str_replace('T',' ',$expires).':00','connections'=>$max,'ip'=>$ip?:null,'country'=>$country?:null,'agent'=>trim((string)($input['allowed_user_agent']??''))?:null,'notes'=>trim((string)($input['notes']??''))?:null];
+        $data=['reseller'=>null,'username'=>$username,'credential'=>$this->cipher->encrypt((string)($input['password']??'')),'status'=>'active','expires'=>$expires===''?null:str_replace('T',' ',$expires).':00','connections'=>$max,'trial'=>isset($input['is_trial'])?1:0,'restreamer'=>isset($input['is_restreamer'])?1:0,'ip'=>$ip?:null,'country'=>$country?:null,'agent'=>trim((string)($input['allowed_user_agent']??''))?:null,'notes'=>trim((string)($input['notes']??''))?:null];
         $this->db->beginTransaction();
         try{$id=$this->accounts->create($data,(array)($input['package_ids']??[]),Auth::id()??throw new RuntimeException('Sesión inválida.'));$this->audit->record('account.created','end_user_account',$id,['username'=>$username]);$this->db->commit();return $id;}
         catch(Throwable $e){if($this->db->inTransaction())$this->db->rollBack();throw $e;}
