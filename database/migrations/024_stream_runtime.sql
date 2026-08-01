@@ -1,0 +1,4 @@
+ALTER TABLE live_channels ADD COLUMN runtime_status ENUM('unknown','online','down','degraded') NOT NULL DEFAULT 'unknown' AFTER last_healthy_at,
+ ADD COLUMN online_since DATETIME NULL AFTER runtime_status,ADD COLUMN last_down_at DATETIME NULL AFTER online_since,
+ ADD COLUMN restart_count INT UNSIGNED NOT NULL DEFAULT 0 AFTER last_down_at,ADD COLUMN active_source_id BIGINT UNSIGNED NULL AFTER restart_count;
+CREATE TABLE IF NOT EXISTS stream_restart_events(id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,channel_id BIGINT UNSIGNED NOT NULL,source_id BIGINT UNSIGNED NULL,reason VARCHAR(255) NOT NULL,automatic BOOLEAN NOT NULL DEFAULT FALSE,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(channel_id) REFERENCES live_channels(content_item_id) ON DELETE CASCADE,FOREIGN KEY(source_id) REFERENCES stream_sources(id) ON DELETE SET NULL,INDEX(channel_id,created_at)) ENGINE=InnoDB;

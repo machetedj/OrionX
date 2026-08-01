@@ -33,6 +33,7 @@ $r->post('/reseller/accounts/suspend',[ResellerPortalController::class,'suspend'
 $r->get('/live',[LiveChannelController::class,'index'],[AuthMiddleware::class]);
 $r->post('/live',[LiveChannelController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/live/source',[LiveChannelController::class,'source'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/live/restart',[LiveChannelController::class,'restart'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/libraries',[MediaLibraryController::class,'index'],[AuthMiddleware::class]);
 $r->post('/libraries',[MediaLibraryController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/scan',[MediaLibraryController::class,'scan'],[AuthMiddleware::class,CsrfMiddleware::class]);
