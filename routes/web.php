@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,ResellerAuthController,ResellerPortalController,ResourceController,UserController};
+use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -50,3 +50,8 @@ $r->get('/portal.php',[CompatibilityController::class,'portal']);
 $r->post('/portal.php',[CompatibilityController::class,'portal']);
 $r->get('/stalker_portal/server/load.php',[CompatibilityController::class,'stalker']);
 $r->post('/stalker_portal/server/load.php',[CompatibilityController::class,'stalker']);
+$r->get('/xui-import',[XuiImportController::class,'index'],[AuthMiddleware::class]);
+$r->post('/xui-import/connections',[XuiImportController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/xui-import/test',[XuiImportController::class,'test'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/xui-import/run',[XuiImportController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/xui-import/detail',[XuiImportController::class,'detail'],[AuthMiddleware::class]);
