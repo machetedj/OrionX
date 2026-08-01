@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -11,6 +11,9 @@ $r->get('/servers',[ResourceController::class,'servers'],[AuthMiddleware::class]
 $r->post('/servers/mode',[ResourceController::class,'serverMode'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/resellers',[ResourceController::class,'resellers'],[AuthMiddleware::class]);
 $r->get('/accounts',[AccountController::class,'index'],[AuthMiddleware::class]);
+$r->get('/packages',[PackageController::class,'index'],[AuthMiddleware::class]);
+$r->post('/packages',[PackageController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/packages/toggle',[PackageController::class,'toggle'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/accounts',[AccountController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/accounts/status',[AccountController::class,'status'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/accounts/renew',[AccountController::class,'renew'],[AuthMiddleware::class,CsrfMiddleware::class]);
