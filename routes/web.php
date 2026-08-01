@@ -29,6 +29,7 @@ $r->post('/live/source',[LiveChannelController::class,'source'],[AuthMiddleware:
 $r->get('/libraries',[MediaLibraryController::class,'index'],[AuthMiddleware::class]);
 $r->post('/libraries',[MediaLibraryController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/scan',[MediaLibraryController::class,'scan'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/libraries/remote',[MediaLibraryController::class,'remote'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/media/{token}',[MediaController::class,'serve']);
 $r->get('/logs',[LogController::class,'index'],[AuthMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);

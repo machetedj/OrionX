@@ -123,6 +123,13 @@ final readonly class SshProvisioner
         }
     }
 
+    public function mediaTask(int $serverId,array $task):array
+    {
+        $s=$this->db->prepare('SELECT c.ssh_host,c.ssh_port,c.ssh_user,c.host_fingerprint,c.private_key_ciphertext,c.password_ciphertext FROM server_ssh_credentials c WHERE c.server_id=?');$s->execute([$serverId]);$config=$s->fetch()?:throw new RuntimeException('Configura primero el acceso SSH del servidor.');
+        $ssh=$this->ssh($config,SSH2::class);$sftp=$this->ssh($config,SFTP::class);$directory=self::REMOTE_DIRECTORY.'-media-'.bin2hex(random_bytes(6));
+        try{if(!$sftp->mkdir($directory,0700,true))throw new RuntimeException('No se pudo preparar la tarea multimedia remota.');$script=dirname(__DIR__,2).'/resources/balancer/media-task.php';if(!$sftp->put($directory.'/media-task.php',$script,SFTP::SOURCE_LOCAL_FILE)||!$sftp->put($directory.'/task.json',json_encode($task,JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)))throw new RuntimeException('No se pudo transferir la tarea multimedia.');$sftp->chmod(0700,$directory.'/media-task.php');$sftp->chmod(0600,$directory.'/task.json');$ssh->setTimeout(0);$output=(string)$ssh->exec('/usr/bin/php '.$directory.'/media-task.php '.$directory.'/task.json');$exit=$ssh->getExitStatus();if($exit!==0)throw new RuntimeException('La tarea multimedia remota falló: '.substr($output,0,1000));$result=json_decode($output,true,64,JSON_THROW_ON_ERROR);if(!is_array($result)||empty($result['ok']))throw new RuntimeException('Respuesta multimedia remota inválida.');return $result;}finally{$sftp->delete($directory,true);}
+    }
+
     private function ssh(array $config, string $class): SSH2|SFTP
     {
         $host = $config['ssh_host'];
