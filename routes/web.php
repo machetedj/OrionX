@@ -30,6 +30,9 @@ $r->get('/libraries',[MediaLibraryController::class,'index'],[AuthMiddleware::cl
 $r->post('/libraries',[MediaLibraryController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/scan',[MediaLibraryController::class,'scan'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/remote',[MediaLibraryController::class,'remote'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/libraries/watch',[MediaLibraryController::class,'watchStore'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/libraries/watch/run',[MediaLibraryController::class,'watchRun'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/libraries/watch/disable',[MediaLibraryController::class,'watchDisable'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/movies',[MovieController::class,'index'],[AuthMiddleware::class]);
 $r->post('/movies',[MovieController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/movies/tmdb',[MovieController::class,'tmdb'],[AuthMiddleware::class]);
