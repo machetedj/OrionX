@@ -54,4 +54,5 @@ $r->get('/xui-import',[XuiImportController::class,'index'],[AuthMiddleware::clas
 $r->post('/xui-import/connections',[XuiImportController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/xui-import/test',[XuiImportController::class,'test'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/xui-import/run',[XuiImportController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/xui-import/upload',[XuiImportController::class,'upload'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/xui-import/detail',[XuiImportController::class,'detail'],[AuthMiddleware::class]);

@@ -15,6 +15,7 @@ final readonly class TaskWorker
   'issue_certificate'=>$this->certificates->issueMain((int)($p['request_id']??0)),
   'provision_balancer','sync_balancer','update_balancer'=>$this->provisioner->deploy((int)($p['deployment_id']??0)),
   'xui_import'=>$this->xui->run((int)($p['connection_id']??0),(bool)($p['replace']??false)),
+  'xui_sql_upload'=>$this->xui->runUpload((int)($p['upload_id']??0)),
   default=>throw new RuntimeException('Handler aún no configurado para '.$job['type'])};}
  private function cleanupSessions():array{$count=$this->db->exec("UPDATE active_sessions SET disconnected_at=NOW(),disconnect_reason='lease_expired' WHERE disconnected_at IS NULL AND last_seen_at<DATE_SUB(NOW(),INTERVAL 2 MINUTE)");return ['sessions_closed'=>$count];}
  private function rotateLogs():array{$categories=$this->db->query('SELECT category,retention_days FROM log_retention_policies')->fetchAll();$deleted=0;$s=$this->db->prepare('DELETE FROM system_logs WHERE category=? AND created_at<DATE_SUB(NOW(),INTERVAL ? DAY)');foreach($categories as $policy){$s->execute([$policy['category'],$policy['retention_days']]);$deleted+=$s->rowCount();}return ['logs_deleted'=>$deleted];}

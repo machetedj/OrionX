@@ -174,7 +174,7 @@ else
   mariadb-admin --host="$DB_HOST" --port="$DB_PORT" --user="$DB_USERNAME" --password="$DB_PASSWORD" ping --connect-timeout=10 >/dev/null
 fi
 
-install -d -o "$APP_USER" -g www-data -m 0770 storage/logs storage/cache storage/sessions
+install -d -o "$APP_USER" -g www-data -m 0770 storage/logs storage/cache storage/sessions storage/imports/xui
 install -d -o root -g www-data -m 0750 /etc/nginx/media-libraries.d
 chown -R "$APP_USER":www-data "$APP_DIR"
 chmod 0640 "$APP_DIR/.env"
@@ -206,6 +206,10 @@ pm.min_spare_servers = 2
 pm.max_spare_servers = 8
 php_admin_value[open_basedir] = ${APP_DIR}:/tmp:/usr/share/php
 php_admin_value[session.save_path] = ${APP_DIR}/storage/sessions
+php_admin_value[upload_max_filesize] = 5G
+php_admin_value[post_max_size] = 5G
+php_admin_value[max_execution_time] = 600
+php_admin_value[max_input_time] = 600
 php_admin_flag[display_errors] = off
 FPM
 rm -f "/etc/php/${PHP_VERSION}/fpm/pool.d/www.conf"
@@ -213,6 +217,7 @@ cp config/supervisor-worker.conf /etc/supervisor/conf.d/media-panel-worker.conf
 cp config/media-panel.cron /etc/cron.d/media-panel
 chmod 0644 /etc/cron.d/media-panel
 install -o root -g root -m 0750 scripts/cert-helper.php /usr/local/sbin/media-panel-cert-helper
+install -o root -g root -m 0750 scripts/xui-sql-helper.php /usr/local/sbin/orionx-xui-sql-helper
 install -o root -g root -m 0440 config/media-panel-sudoers /etc/sudoers.d/media-panel-certificates
 visudo -cf /etc/sudoers.d/media-panel-certificates
 ln -sfn /etc/nginx/sites-available/licensed-media-panel /etc/nginx/sites-enabled/licensed-media-panel
