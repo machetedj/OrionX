@@ -5,11 +5,12 @@ use App\Repositories\UserRepository;
 
 final readonly class Auth
 {
-    public function __construct(private UserRepository $users) {}
+    public function __construct(private UserRepository $users,private LegacyPassword $passwords) {}
     public function attempt(string $email,string $password,string $portal='admin'): bool
     {
-        $user=$this->users->byEmail($email);
-        if (!$user || $user['status']!=='active' || !password_verify($password,$user['password_hash'])) return false;
+        $user=$this->users->byLogin($email);
+        if (!$user || $user['status']!=='active' || !$this->passwords->verify($password,$user['password_hash'])) return false;
+        if($this->passwords->needsUpgrade($user['password_hash']))$this->users->upgradePassword((int)$user['id'],$password);
         $roles=$this->users->roles((int)$user['id']);$reseller=(bool)array_intersect($roles,['reseller','subreseller']);
         if(($portal==='reseller')!==$reseller)return false;
         session_regenerate_id(true); $_SESSION['user_id']=(int)$user['id']; $_SESSION['permissions']=$this->users->permissions((int)$user['id']);$_SESSION['roles']=$roles;$_SESSION['portal']=$portal; return true;
