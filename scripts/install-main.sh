@@ -176,6 +176,9 @@ fi
 
 install -d -o "$APP_USER" -g www-data -m 0770 storage/logs storage/cache storage/sessions storage/imports/xui
 install -d -o root -g www-data -m 0750 /etc/nginx/media-libraries.d
+touch /etc/nginx/orionx-blocked-ips.conf
+chown root:root /etc/nginx/orionx-blocked-ips.conf
+chmod 0644 /etc/nginx/orionx-blocked-ips.conf
 chown -R "$APP_USER":www-data "$APP_DIR"
 chmod 0640 "$APP_DIR/.env"
 sudo -u "$APP_USER" /usr/bin/php scripts/migrate.php
@@ -216,6 +219,9 @@ rm -f "/etc/php/${PHP_VERSION}/fpm/pool.d/www.conf"
 cp config/supervisor-worker.conf /etc/supervisor/conf.d/media-panel-worker.conf
 cp config/media-panel.cron /etc/cron.d/media-panel
 chmod 0644 /etc/cron.d/media-panel
+install -o root -g root -m 0644 resources/security/orionx-security-bot.service /etc/systemd/system/orionx-security-bot.service
+install -o root -g root -m 0644 resources/security/orionx-security-bot.timer /etc/systemd/system/orionx-security-bot.timer
+systemctl daemon-reload
 install -o root -g root -m 0750 scripts/cert-helper.php /usr/local/sbin/media-panel-cert-helper
 install -o root -g root -m 0750 scripts/xui-sql-helper.php /usr/local/sbin/orionx-xui-sql-helper
 install -o root -g root -m 0750 scripts/db-firewall-helper.php /usr/local/sbin/orionx-db-firewall-helper
@@ -233,6 +239,7 @@ ufw --force enable
 
 nginx -t
 systemctl enable --now nginx redis-server "php${PHP_VERSION}-fpm" supervisor cron
+systemctl enable --now orionx-security-bot.timer
 supervisorctl reread
 supervisorctl update
 

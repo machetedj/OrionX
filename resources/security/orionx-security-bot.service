@@ -1,0 +1,17 @@
+[Unit]
+Description=OrionX Nginx security bot
+After=nginx.service mariadb.service network.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/licensed-media-panel
+ExecStart=/usr/bin/php /opt/licensed-media-panel/scripts/nginx-security-bot.php
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/licensed-media-panel/storage/cache /etc/nginx
+ReadOnlyPaths=/var/log/nginx
+
