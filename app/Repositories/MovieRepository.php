@@ -21,4 +21,11 @@ final readonly class MovieRepository
  public function libraries():array{return $this->db->query("SELECT l.id,l.name,l.mount_path,l.server_id,s.name server_name,s.status server_status FROM storage_libraries l LEFT JOIN servers s ON s.id=l.server_id WHERE l.active=1 AND l.content_type IN ('movie','mixed') ORDER BY COALESCE(s.name,'Principal'),l.name")->fetchAll();}
  public function servers():array{return $this->db->query('SELECT id,name FROM servers ORDER BY name')->fetchAll();}
  public function packages():array{return $this->db->query('SELECT id,name FROM packages WHERE active=1 ORDER BY name')->fetchAll();}
+ public function bulkItems(array $input):array
+ {
+  $type=in_array(($input['type']??''),['movie','episode'],true)?$input['type']:'';$status=in_array(($input['status']??''),['draft','active','disabled','missing'],true)?$input['status']:'';$where=["c.type IN ('movie','episode')"];$params=[];$search=trim((string)($input['search']??''));
+  if($type!==''){$where[]='c.type=?';$params[]=$type;}if($status!==''){$where[]='c.status=?';$params[]=$status;}if($search!==''){$where[]='(c.title LIKE ? OR CAST(c.id AS CHAR)=?)';$params[]='%'.str_replace(['%','_'],['\\%','\\_'],$search).'%';$params[]=$search;}
+  $sql="SELECT c.id,c.type,c.title,c.status,c.tmdb_id,c.category_id,cat.name category_name,s.name server_name,ss.season_number,se.episode_number,parent.title series_title FROM content_items c LEFT JOIN categories cat ON cat.id=c.category_id LEFT JOIN content_files f ON f.id=(SELECT MIN(f2.id) FROM content_files f2 WHERE f2.content_item_id=c.id) LEFT JOIN storage_libraries l ON l.id=f.library_id LEFT JOIN servers s ON s.id=COALESCE(f.server_id,l.server_id) LEFT JOIN series_episodes se ON se.content_item_id=c.id LEFT JOIN series_seasons ss ON ss.id=se.season_id LEFT JOIN content_items parent ON parent.id=ss.series_id WHERE ".implode(' AND ',$where).' ORDER BY c.id DESC LIMIT 500';$q=$this->db->prepare($sql);$q->execute($params);return $q->fetchAll();
+ }
+ public function bulkCategories():array{return $this->db->query("SELECT id,name,type FROM categories WHERE type IN ('movie','series') AND active=1 ORDER BY type,name")->fetchAll();}
 }

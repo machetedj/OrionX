@@ -48,6 +48,8 @@ $r->post('/libraries/watch',[MediaLibraryController::class,'watchStore'],[AuthMi
 $r->post('/libraries/watch/run',[MediaLibraryController::class,'watchRun'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/libraries/watch/disable',[MediaLibraryController::class,'watchDisable'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/movies',[MovieController::class,'index'],[AuthMiddleware::class]);
+$r->get('/media/bulk',[MovieController::class,'bulk'],[AuthMiddleware::class]);
+$r->post('/media/bulk',[MovieController::class,'bulkSave'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/movies',[MovieController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/movies/tmdb',[MovieController::class,'tmdb'],[AuthMiddleware::class]);
 $r->get('/movies/tmdb/details',[MovieController::class,'tmdbDetails'],[AuthMiddleware::class]);
