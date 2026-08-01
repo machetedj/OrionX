@@ -1,0 +1,8 @@
+<?php
+declare(strict_types=1);namespace App\Repositories;use PDO;
+final readonly class SessionRepository{
+ public function __construct(private PDO $db){}
+ public function active(array $f=[]):array{$where=['s.disconnected_at IS NULL'];$p=[];$type=(string)($f['type']??'');if(in_array($type,['live','movie','episode'],true)){$where[]='c.type=?';$p[]=$type;}$country=strtoupper(trim((string)($f['country']??'')));if(preg_match('/^[A-Z]{2}$/',$country)){$where[]='s.country=?';$p[]=$country;}$q=trim((string)($f['q']??''));if($q!==''){$where[]='(a.username LIKE ? OR c.title LIKE ? OR s.ip LIKE ?)';$term='%'.$q.'%';array_push($p,$term,$term,$term);}$sql="SELECT s.id,s.account_id,s.content_item_id,s.ip,s.country,s.user_agent,s.started_at,s.last_seen_at,a.username,a.is_restreamer,a.is_trial,c.title content_title,c.type content_type,srv.name server_name FROM active_sessions s JOIN end_user_accounts a ON a.id=s.account_id LEFT JOIN content_items c ON c.id=s.content_item_id LEFT JOIN servers srv ON srv.id=s.server_id WHERE ".implode(' AND ',$where).' ORDER BY s.last_seen_at DESC LIMIT 500';$st=$this->db->prepare($sql);$st->execute($p);return $st->fetchAll();}
+ public function countries():array{return $this->db->query("SELECT country,COUNT(*) total FROM active_sessions WHERE disconnected_at IS NULL AND country IS NOT NULL GROUP BY country ORDER BY total DESC,country")->fetchAll();}
+ public function summary():array{return $this->db->query("SELECT COUNT(*) connections,COUNT(DISTINCT account_id) users,SUM(c.type='live') live,SUM(c.type='movie') movies,SUM(c.type='episode') episodes,COUNT(DISTINCT country) countries FROM active_sessions s LEFT JOIN content_items c ON c.id=s.content_item_id WHERE s.disconnected_at IS NULL")->fetch()?:[];}
+}

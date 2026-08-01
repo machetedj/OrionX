@@ -1,17 +1,22 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,SettingsController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,SessionController,SettingsController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
 $r->post('/logout',[AuthController::class,'logout'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/',[DashboardController::class,'index'],[AuthMiddleware::class]);
-$r->get('/users',[UserController::class,'index'],[AuthMiddleware::class]); $r->post('/users',[UserController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/users',[UserController::class,'index'],[AuthMiddleware::class]); $r->post('/users',[UserController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/users/status',[UserController::class,'status'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/categories',[ResourceController::class,'categories'],[AuthMiddleware::class]); $r->post('/categories',[ResourceController::class,'storeCategory'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/epg',[EpgController::class,'index'],[AuthMiddleware::class]);$r->post('/epg',[EpgController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/epg/run',[EpgController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/servers',[ResourceController::class,'servers'],[AuthMiddleware::class]); $r->post('/servers',[ResourceController::class,'storeServer'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/servers/mode',[ResourceController::class,'serverMode'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/resellers',[ResourceController::class,'resellers'],[AuthMiddleware::class]);
 $r->get('/accounts',[AccountController::class,'index'],[AuthMiddleware::class]);
+$r->get('/sessions',[SessionController::class,'index'],[AuthMiddleware::class]);
+$r->post('/sessions/disconnect',[SessionController::class,'disconnect'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/sessions/kill-content',[SessionController::class,'killContent'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/sessions/ban-line',[SessionController::class,'banLine'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/sessions/ban-ip',[SessionController::class,'banIp'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/packages',[PackageController::class,'index'],[AuthMiddleware::class]);
 $r->get('/bouquets',[BouquetController::class,'index'],[AuthMiddleware::class]);
 $r->post('/bouquets',[BouquetController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);
