@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BouquetController,CertificateController,CompatibilityController,DashboardController,DeploymentController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -12,6 +12,9 @@ $r->post('/servers/mode',[ResourceController::class,'serverMode'],[AuthMiddlewar
 $r->get('/resellers',[ResourceController::class,'resellers'],[AuthMiddleware::class]);
 $r->get('/accounts',[AccountController::class,'index'],[AuthMiddleware::class]);
 $r->get('/packages',[PackageController::class,'index'],[AuthMiddleware::class]);
+$r->get('/bouquets',[BouquetController::class,'index'],[AuthMiddleware::class]);
+$r->post('/bouquets',[BouquetController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/bouquets/toggle',[BouquetController::class,'toggle'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/packages',[PackageController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/packages/toggle',[PackageController::class,'toggle'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/accounts',[AccountController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);

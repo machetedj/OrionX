@@ -15,7 +15,7 @@ final class XuiNativeConverter
   $this->db->prepare("INSERT INTO xui_conversion_runs(import_id) VALUES(?)")->execute([$importId]);$this->run=(int)$this->db->lastInsertId();
   try{
    $this->loadMaps($importId);$this->categories($importId,$prefix);$this->epg($importId,$prefix);$this->servers($importId,$prefix);$this->packages($importId,$prefix);
-   $this->resellers($importId,$prefix);$this->streams($importId,$prefix);$this->series($importId,$prefix);$this->episodes($importId,$prefix);
+   $this->resellers($importId,$prefix);$this->streams($importId,$prefix);$this->series($importId,$prefix);$this->episodes($importId,$prefix);$this->bouquets($importId,$prefix);
    $this->lines($importId,$prefix);$this->mag($importId,$prefix);$this->packageAccess($importId,$prefix);
    $summary=['created'=>$this->created,'updated'=>$this->updated,'conflicts'=>$this->conflicts];$status=$this->conflicts?'completed_with_conflicts':'completed';
    $this->db->prepare('UPDATE xui_conversion_runs SET status=?,entities_created=?,entities_updated=?,conflicts_count=?,summary=?,completed_at=NOW() WHERE id=?')->execute([$status,$this->created,$this->updated,$this->conflicts,json_encode($summary),$this->run]);
@@ -52,5 +52,6 @@ final class XuiNativeConverter
  private function date(mixed $v):?string{return is_numeric($v)&&(int)$v>0?date('Y-m-d H:i:s',(int)$v):null;}
  private function days(int $n,string $unit):?int{if($n<1)return null;$u=strtolower($unit);return match(true){str_contains($u,'hour')=>max(1,(int)ceil($n/24)),str_contains($u,'month')=>$n*30,str_contains($u,'year')=>$n*365,default=>$n};}
  private function contentType(string $v):?string{$v=strtolower($v);return match(true){str_contains($v,'live')||str_contains($v,'radio')=>'live',str_contains($v,'movie')||str_contains($v,'vod')=>'movie',str_contains($v,'series')=>'series',default=>null};}
+ private function bouquets(int $i,string $p):void{foreach($this->rows($p.'bouquets') as $r){$name=trim((string)($r['bouquet_name']??''))?:'XUI bouquet '.$r['id'];$this->db->prepare('INSERT INTO bouquets(name,active) VALUES(?,1) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)')->execute([$name]);$bouquet=(int)$this->db->lastInsertId();$this->map($i,'bouquet',(string)$r['id'],$bouquet);foreach(['bouquet_channels'=>'stream','bouquet_movies'=>'stream','bouquet_series'=>'series'] as $field=>$map)foreach($this->list($r[$field]??null) as $legacy){$content=$this->maps[$map][(string)$legacy]??null;if($content)$this->db->prepare('INSERT IGNORE INTO bouquet_content_items(bouquet_id,content_item_id) VALUES(?,?)')->execute([$bouquet,$content]);}}}
  private function jsonObject(?string $v):?string{if(!$v)return null;$j=json_decode($v,true);return json_encode(is_array($j)?$j:['legacy'=>$v],JSON_UNESCAPED_UNICODE);}
 }

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS bouquets(id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(150) NOT NULL,description TEXT NULL,active BOOLEAN NOT NULL DEFAULT TRUE,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,UNIQUE(name)) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS bouquet_categories(bouquet_id BIGINT UNSIGNED NOT NULL,category_id BIGINT UNSIGNED NOT NULL,PRIMARY KEY(bouquet_id,category_id),FOREIGN KEY(bouquet_id) REFERENCES bouquets(id) ON DELETE CASCADE,FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE CASCADE) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS bouquet_content_items(bouquet_id BIGINT UNSIGNED NOT NULL,content_item_id BIGINT UNSIGNED NOT NULL,PRIMARY KEY(bouquet_id,content_item_id),FOREIGN KEY(bouquet_id) REFERENCES bouquets(id) ON DELETE CASCADE,FOREIGN KEY(content_item_id) REFERENCES content_items(id) ON DELETE CASCADE) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS package_bouquets(package_id BIGINT UNSIGNED NOT NULL,bouquet_id BIGINT UNSIGNED NOT NULL,PRIMARY KEY(package_id,bouquet_id),FOREIGN KEY(package_id) REFERENCES packages(id) ON DELETE CASCADE,FOREIGN KEY(bouquet_id) REFERENCES bouquets(id) ON DELETE CASCADE) ENGINE=InnoDB;
+INSERT IGNORE INTO permissions(name,slug) VALUES('Gestionar bouquets','bouquets.manage');
+INSERT IGNORE INTO role_permissions(role_id,permission_id) SELECT 1,id FROM permissions WHERE slug='bouquets.manage';
+INSERT IGNORE INTO role_permissions(role_id,permission_id) SELECT 2,id FROM permissions WHERE slug='bouquets.manage';
