@@ -47,16 +47,20 @@ trap restore_policy EXIT
 printf '#!/bin/sh\nexit 101\n' > "$POLICY"; chmod 0755 "$POLICY"
 apt-get update; apt-get install -y software-properties-common ca-certificates
 if ! apt-cache show "php${PHP_VERSION}-cli" >/dev/null 2>&1;then add-apt-repository -y ppa:ondrej/php;apt-get update;fi
-apt-get install -y nginx redis-server "php${PHP_VERSION}-cli" "php${PHP_VERSION}-curl" certbot python3-certbot-nginx
+apt-get install -y nginx libnginx-mod-rtmp redis-server "php${PHP_VERSION}-cli" "php${PHP_VERSION}-curl" certbot python3-certbot-nginx
 install_latest_ffmpeg; restore_policy; trap - EXIT
 id media-balancer >/dev/null 2>&1 || useradd --system --home "$INSTALL_DIR" --shell /usr/sbin/nologin media-balancer
 install -d -o root -g media-balancer -m 0750 "$INSTALL_DIR"
 install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/agent.php" "$INSTALL_DIR/agent.php"
 install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/media-task.php" "$INSTALL_DIR/media-task.php"
+install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/rtmp-agent.php" "$INSTALL_DIR/rtmp-agent.php"
+install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/rtmp-task.php" "$INSTALL_DIR/rtmp-task.php"
 install -o root -g media-balancer -m 0640 "$BUNDLE_DIR/agent.env" "$INSTALL_DIR/agent.env"
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.service" /etc/systemd/system/media-balancer.service
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.timer" /etc/systemd/system/media-balancer.timer
 install -o root -g root -m 0644 "$BUNDLE_DIR/nginx-balancer.conf" /etc/nginx/sites-available/media-balancer
+touch /etc/nginx/orionx-rtmp.conf; chmod 0640 /etc/nginx/orionx-rtmp.conf
+grep -qF 'include /etc/nginx/orionx-rtmp.conf;' /etc/nginx/nginx.conf || sed -i '/^[[:space:]]*http[[:space:]]*{/i include /etc/nginx/orionx-rtmp.conf;' /etc/nginx/nginx.conf
 ln -sfn /etc/nginx/sites-available/media-balancer /etc/nginx/sites-enabled/media-balancer; rm -f /etc/nginx/sites-enabled/default
 nginx -t; systemctl daemon-reload; systemctl enable --now nginx redis-server media-balancer.timer; systemctl start media-balancer.service
 echo "BALANCER_INSTALL_OK php=${PHP_VERSION} ubuntu=${VERSION_ID}"

@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,SecurityController,SessionController,SettingsController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SessionController,SettingsController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -36,6 +36,7 @@ $r->post('/reseller/accounts',[ResellerPortalController::class,'create'],[Resell
 $r->post('/reseller/accounts/renew',[ResellerPortalController::class,'renew'],[ResellerMiddleware::class,CsrfMiddleware::class]);
 $r->post('/reseller/accounts/suspend',[ResellerPortalController::class,'suspend'],[ResellerMiddleware::class,CsrfMiddleware::class]);
 $r->get('/live',[LiveChannelController::class,'index'],[AuthMiddleware::class]);
+$r->get('/rtmp',[RtmpController::class,'index'],[AuthMiddleware::class]);$r->post('/rtmp',[RtmpController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/rtmp/rotate',[RtmpController::class,'rotate'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/rtmp/reveal',[RtmpController::class,'reveal'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/live',[LiveChannelController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/live/source',[LiveChannelController::class,'source'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/live/restart',[LiveChannelController::class,'restart'],[AuthMiddleware::class,CsrfMiddleware::class]);

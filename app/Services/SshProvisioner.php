@@ -59,6 +59,8 @@ final readonly class SshProvisioner
             $bundleFiles = [
                 'agent.php' => $assets . '/agent.php',
                 'media-task.php' => $assets . '/media-task.php',
+                'rtmp-agent.php' => $assets . '/rtmp-agent.php',
+                'rtmp-task.php' => $assets . '/rtmp-task.php',
                 'media-balancer.service' => $assets . '/media-balancer.service',
                 'media-balancer.timer' => $assets . '/media-balancer.timer',
                 'nginx-balancer.conf' => $assets . '/nginx-balancer.conf',
