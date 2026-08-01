@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SecurityGroupController,SessionController,SettingsController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,ContentMoveController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SecurityGroupController,SessionController,SettingsController,UserController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -10,6 +10,7 @@ $r->get('/categories',[ResourceController::class,'categories'],[AuthMiddleware::
 $r->get('/epg',[EpgController::class,'index'],[AuthMiddleware::class]);$r->post('/epg',[EpgController::class,'save'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/epg/run',[EpgController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/servers',[ResourceController::class,'servers'],[AuthMiddleware::class]); $r->post('/servers',[ResourceController::class,'storeServer'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/servers/mode',[ResourceController::class,'serverMode'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/servers/move-content',[ContentMoveController::class,'index'],[AuthMiddleware::class]);$r->post('/servers/move-content',[ContentMoveController::class,'move'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/resellers',[ResourceController::class,'resellers'],[AuthMiddleware::class]);
 $r->get('/accounts',[AccountController::class,'index'],[AuthMiddleware::class]);
 $r->get('/sessions',[SessionController::class,'index'],[AuthMiddleware::class]);
