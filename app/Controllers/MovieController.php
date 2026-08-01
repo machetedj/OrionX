@@ -11,6 +11,8 @@ final readonly class MovieController
  public function tmdbDetails(Request $r):void{$this->allow();try{Response::json(['ok'=>true,'data'=>$this->tmdb->details('movie',$r->int('id'),$r->string('language')?:'es-ES')]);}catch(Throwable $e){Response::json(['ok'=>false,'error'=>$e->getMessage()],422);}}
  public function bulk(Request $r):void{$this->allowBulk();$this->view->render('movies/bulk',['title'=>'Edición masiva','items'=>$this->repo->bulkItems($r->input),'filters'=>$r->input,'categories'=>$this->repo->bulkCategories(),'servers'=>$this->repo->servers(),'packages'=>$this->repo->packages(),'csrf'=>$this->csrf]);}
  public function bulkSave(Request $r):void{$this->allowBulk();try{$count=$this->service->bulkUpdate($r->input);Response::redirect('/media/bulk?updated='.$count);}catch(Throwable $e){http_response_code(422);exit(htmlspecialchars($e->getMessage(),ENT_QUOTES,'UTF-8'));}}
+ public function bulkDelete(Request $r):void{$this->allowBulk();$this->view->render('movies/delete',['title'=>'Eliminación masiva','items'=>$this->repo->bulkItems($r->input),'filters'=>$r->input,'csrf'=>$this->csrf]);}
+ public function bulkDeleteSave(Request $r):void{$this->allowBulk();try{$count=$this->service->bulkDelete($r->input);Response::redirect('/media/delete?deleted='.$count);}catch(Throwable $e){http_response_code(422);exit(htmlspecialchars($e->getMessage(),ENT_QUOTES,'UTF-8'));}}
  private function allow():void{if(!Auth::can('movies.manage')){http_response_code(403);exit('Sin permiso');}}
  private function allowBulk():void{if(!Auth::can('bulk.execute')||(!Auth::can('movies.manage')&&!Auth::can('series.manage'))){http_response_code(403);exit('Sin permiso para acciones masivas');}}
 }
