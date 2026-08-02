@@ -51,7 +51,7 @@ install_latest_ffmpeg() {
   tar -C "$work_dir" -xf "$work_dir/$archive"
   pushd "$work_dir/ffmpeg-$version" >/dev/null
   ./configure --prefix=/usr/local --bindir=/usr/local/bin --disable-debug --disable-doc \
-    --enable-gpl --enable-openssl --enable-libx264 --enable-libx265 --enable-libvpx \
+    --enable-gpl --enable-version3 --enable-openssl --enable-libx264 --enable-libx265 --enable-libvpx \
     --enable-libopus --enable-libass --enable-libfreetype --enable-libmp3lame --enable-libvorbis
   make -j"$(getconf _NPROCESSORS_ONLN)"; make install; popd >/dev/null; hash -r
   verified="$(/usr/local/bin/ffmpeg -version | awk 'NR==1{print $3}')"
