@@ -23,7 +23,13 @@ $groups=[
   ['Ingest RTMP','/rtmp'],['Guía TV / EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']
  ]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Agregar bouquet','/bouquets#agregar-bouquet'],['Manejar bouquets','/bouquets#manejar-bouquets'],['Ordenar bouquets','/bouquets#ordenar-bouquets']]],
- ['label'=>'Administración','icon'=>'⌕','items'=>[['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Instalar y actualizar balanceadores','/deployments'],['Certificados TLS','/certificates'],['Mover contenido entre servidores','/servers/move-content'],['Ajustes generales','/settings'],['Web Application Firewall','/security/waf'],['Seguridad de base de datos','/security/database'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import'],['IP bloqueadas','/security/ip-blocks'],['Logs y auditoría','/logs']]],
+ ['label'=>'Administración','icon'=>'⌕','items'=>[
+  ['Configuración de servicios','', [['Ajustes generales','/settings'],['Categorías','/categories'],['EPG','/epg'],['Grupos','/security/groups'],['Packages','/packages'],['Proxies','/servers/proxies'],['Ingest RTMP','/rtmp'],['Certificados TLS','/certificates'],['Watch Folders','/libraries']]],
+  ['Control de acceso','', [['Usuarios administrativos','/users'],['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Seguridad de base de datos','/security/database'],['Web Application Firewall','/security/waf'],['IP bloqueadas','/security/ip-blocks']]],
+  ['Herramientas','', [['Instalar y actualizar balanceadores','/deployments'],['Mover contenido entre servidores','/servers/move-content'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import']]],
+  ['Edición masiva','', [['Editar VOD y episodios','/media/bulk'],['Eliminar VOD y episodios','/media/delete']]],
+  ['Logs y auditoría','/logs']
+ ]],
 ];?>
 <input id="nav-toggle" type="checkbox" class="sr-only"><label for="nav-toggle" class="md:hidden ml-auto cursor-pointer border border-slate-700 px-3 py-2 rounded" aria-label="Abrir menú">☰</label>
 <div class="nav-links basis-full md:basis-auto md:ml-0 md:flex md:flex-1 flex-col md:flex-row md:items-stretch self-stretch pb-3 md:pb-0">
