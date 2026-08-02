@@ -21,7 +21,6 @@ $groups=[
   ['Canales creados','/live'],
   ['Películas','', [['Agregar película','/movies#agregar-pelicula'],['Importar múltiples','/libraries'],['Editar múltiples','/media/bulk'],['Eliminar múltiples','/media/delete'],['Manejar películas','/movies#manejar-peliculas']]],
   ['Series','', [['Importar series y episodios','/libraries'],['Editar episodios múltiples','/media/bulk'],['Eliminar episodios múltiples','/media/delete'],['Manejar series','/libraries']]],
-  ['RTMP IPs','/rtmp'],['Guía TV / EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']
  ]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Agregar bouquet','/bouquets#agregar-bouquet'],['Manejar bouquets','/bouquets#manejar-bouquets'],['Ordenar bouquets','/bouquets#ordenar-bouquets']]],
  ['label'=>'Administración','icon'=>'⌕','items'=>[
