@@ -5,7 +5,7 @@ use PDO;
 final readonly class UserRepository
 {
     public function __construct(private PDO $db){}
-    public function byLogin(string $login): ?array { $s=$this->db->prepare('SELECT * FROM users WHERE (LOWER(email)=LOWER(:login) OR name=:login) AND deleted_at IS NULL ORDER BY (LOWER(email)=LOWER(:login)) DESC,id DESC LIMIT 1'); $s->execute(['login'=>$login]); return $s->fetch()?:null; }
+    public function byLogin(string $login): ?array { $s=$this->db->prepare('SELECT * FROM users WHERE (LOWER(email)=LOWER(:email_login) OR name=:name_login) AND deleted_at IS NULL ORDER BY (LOWER(email)=LOWER(:order_login)) DESC,id DESC LIMIT 1'); $s->execute(['email_login'=>$login,'name_login'=>$login,'order_login'=>$login]); return $s->fetch()?:null; }
     public function byEmail(string $email): ?array { return $this->byLogin($email); }
     public function byId(int $id):?array{$s=$this->db->prepare('SELECT * FROM users WHERE id=? AND deleted_at IS NULL');$s->execute([$id]);return $s->fetch()?:null;}
     public function upgradePassword(int $id,string $password):void{$s=$this->db->prepare('UPDATE users SET password_hash=? WHERE id=?');$s->execute([password_hash($password,PASSWORD_ARGON2ID),$id]);}
