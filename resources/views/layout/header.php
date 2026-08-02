@@ -15,7 +15,13 @@ $groups=[
  ['label'=>'Servidores','icon'=>'▤','items'=>[['Servidores','/servers'],['Proxies','/servers/proxies']]],
  ['label'=>'Usuarios','icon'=>'♟','items'=>[['Agregar usuario','/users#agregar-usuario'],['Manejar usuarios','/users#manejar-usuarios']]],
  ['label'=>'Líneas','icon'=>'▣','items'=>[['Líneas de usuario','', [['Agregar línea','/accounts#agregar-linea'],['Manejar líneas','/accounts#manejar-lineas']]],['Dispositivos MAG','', [['Agregar dispositivo MAG','/mag-devices#agregar-mag'],['Manejar dispositivos MAG','/mag-devices#manejar-mag']]],['Conexiones activas','/sessions'],['Packages','/packages']]],
- ['label'=>'Contenido','icon'=>'▶','items'=>[['Canales en vivo','/live'],['Ingest RTMP','/rtmp'],['Películas','/movies'],['Edición masiva VOD','/media/bulk'],['Eliminación masiva VOD','/media/delete'],['EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']]],
+ ['label'=>'Contenido','icon'=>'▶','items'=>[
+  ['Streams','', [['Agregar stream','/live#agregar-stream'],['Importar múltiples','/live#importar-streams'],['Importar y revisar','/libraries'],['Manejar streams','/live#manejar-streams']]],
+  ['Canales creados','/live'],
+  ['Películas','', [['Agregar película','/movies#agregar-pelicula'],['Importar múltiples','/libraries'],['Editar múltiples','/media/bulk'],['Eliminar múltiples','/media/delete'],['Manejar películas','/movies#manejar-peliculas']]],
+  ['Series','', [['Importar series y episodios','/libraries'],['Editar episodios múltiples','/media/bulk'],['Eliminar episodios múltiples','/media/delete'],['Manejar series','/libraries']]],
+  ['Ingest RTMP','/rtmp'],['Guía TV / EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']
+ ]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Administrar bouquets','/bouquets'],['Administrar packages','/packages']]],
  ['label'=>'Administración','icon'=>'⌕','items'=>[['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Instalar y actualizar balanceadores','/deployments'],['Certificados TLS','/certificates'],['Mover contenido entre servidores','/servers/move-content'],['Ajustes generales','/settings'],['Web Application Firewall','/security/waf'],['Seguridad de base de datos','/security/database'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import'],['IP bloqueadas','/security/ip-blocks'],['Logs y auditoría','/logs']]],
 ];?>
