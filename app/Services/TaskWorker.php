@@ -4,7 +4,7 @@ namespace App\Services;
 use PDO;use RuntimeException;use Throwable;
 final readonly class TaskWorker
 {
- public function __construct(private TaskQueueService $queue,private LibraryScanner $scanner,private TmdbService $tmdb,private EpgService $epg,private StreamMonitorService $streams,private BackupService $backups,private ServerHealthService $health,private CertificateIssuer $certificates,private SshProvisioner $provisioner,private XuiImportService $xui,private RemoteMediaService $remoteMedia,private PDO $db){}
+ public function __construct(private TaskQueueService $queue,private LibraryScanner $scanner,private TmdbService $tmdb,private EpgService $epg,private StreamMonitorService $streams,private BackupService $backups,private ServerHealthService $health,private CertificateIssuer $certificates,private SshProvisioner $provisioner,private XuiImportService $xui,private RemoteMediaService $remoteMedia,private WafService $waf,private PDO $db){}
  public function runOne(string $worker):bool{$item=$this->queue->pop();if(!$item)return false;$job=$this->queue->reserve($item['id'],$worker);if(!$job)return false;try{$result=$this->handle($job);$this->queue->complete($job['id'],$result);return true;}catch(Throwable $e){$this->queue->fail($job,$e);return true;}}
  private function handle(array $job):array{$p=$job['payload'];return match($job['type']){
   'import_epg'=>$this->epg->import((int)($p['source_id']??0)),
@@ -20,6 +20,7 @@ final readonly class TaskWorker
   'xui_import'=>$this->xui->run((int)($p['connection_id']??0),(bool)($p['replace']??false)),
   'xui_sql_upload'=>$this->xui->runUpload((int)($p['upload_id']??0)),
   'inventory_media_links','scan_remote_media','validate_remote_media','apply_media_links'=>$this->remoteMedia->run((int)($p['run_id']??0)),
+  'deploy_waf'=>$this->waf->deploy((int)($p['deployment_id']??0)),
   default=>throw new RuntimeException('Handler aún no configurado para '.$job['type'])};}
  private function cleanupSessions():array{$count=$this->db->exec("UPDATE active_sessions SET disconnected_at=NOW(),disconnect_reason='lease_expired' WHERE disconnected_at IS NULL AND last_seen_at<DATE_SUB(NOW(),INTERVAL 2 MINUTE)");return ['sessions_closed'=>$count];}
  private function rotateLogs():array{$categories=$this->db->query('SELECT category,retention_days FROM log_retention_policies')->fetchAll();$deleted=0;$s=$this->db->prepare('DELETE FROM system_logs WHERE category=? AND created_at<DATE_SUB(NOW(),INTERVAL ? DAY)');foreach($categories as $policy){$s->execute([$policy['category'],$policy['retention_days']]);$deleted+=$s->rowCount();}return ['logs_deleted'=>$deleted];}

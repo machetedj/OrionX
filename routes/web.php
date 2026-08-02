@@ -1,5 +1,5 @@
 <?php
-use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,ContentMoveController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ProxyController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SecurityGroupController,SessionController,SettingsController,UserController,XuiImportController};
+use App\Controllers\{AccountController,AuthController,BackupController,BouquetController,CertificateController,CompatibilityController,ContentMoveController,DashboardController,DatabaseFirewallController,DeploymentController,EpgController,LiveChannelController,LogController,MagDeviceController,MediaController,MediaLibraryController,MovieController,PackageController,ProxyController,ResellerAuthController,ResellerPortalController,ResourceController,RtmpController,SecurityController,SecurityGroupController,SessionController,SettingsController,UserController,WafController,XuiImportController};
 use App\Middleware\{AuthMiddleware,CsrfMiddleware,ResellerMiddleware};
 $r=$app->router;
 $r->get('/login',[AuthController::class,'loginForm']); $r->post('/login',[AuthController::class,'login']);
@@ -72,6 +72,7 @@ $r->post('/backups/destinations',[BackupController::class,'destination'],[AuthMi
 $r->post('/backups/run',[BackupController::class,'run'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/security/ip-blocks',[SecurityController::class,'add'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/security/ip-blocks/remove',[SecurityController::class,'remove'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->get('/security/waf',[WafController::class,'index'],[AuthMiddleware::class]);$r->post('/security/waf/settings',[WafController::class,'settings'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/waf/rules',[WafController::class,'rule'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/waf/exclusions',[WafController::class,'exclusion'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/waf/toggle',[WafController::class,'toggle'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/waf/deploy',[WafController::class,'deploy'],[AuthMiddleware::class,CsrfMiddleware::class]);$r->post('/security/waf/import',[WafController::class,'import'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/logs/export',[LogController::class,'export'],[AuthMiddleware::class]);
 $r->get('/certificates',[CertificateController::class,'index'],[AuthMiddleware::class]);
 $r->post('/certificates',[CertificateController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);

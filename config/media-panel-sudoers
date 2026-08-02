@@ -1,3 +1,4 @@
 media-panel ALL=(root) NOPASSWD: /usr/local/sbin/media-panel-cert-helper [0-9]*
 media-panel ALL=(root) NOPASSWD: /usr/local/sbin/orionx-xui-sql-helper [0-9]*
 media-panel ALL=(root) NOPASSWD: /usr/local/sbin/orionx-db-firewall-helper [0-9]*
+media-panel ALL=(root) NOPASSWD: /usr/local/sbin/orionx-waf-helper [0-9]*

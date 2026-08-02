@@ -94,7 +94,7 @@ if ! apt-cache show "php${PHP_VERSION}-fpm" >/dev/null 2>&1; then
   apt-get update
 fi
 
-PACKAGES=(nginx redis-server "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-mysql" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" "php${PHP_VERSION}-curl" "php${PHP_VERSION}-redis" "php${PHP_VERSION}-intl" "php${PHP_VERSION}-zip" unzip composer supervisor cron sudo ufw nfs-common cifs-utils certbot python3-certbot-nginx mariadb-client rclone openssl)
+PACKAGES=(nginx libnginx-mod-http-modsecurity modsecurity-crs redis-server "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-mysql" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" "php${PHP_VERSION}-curl" "php${PHP_VERSION}-redis" "php${PHP_VERSION}-intl" "php${PHP_VERSION}-zip" unzip composer supervisor cron sudo ufw nfs-common cifs-utils certbot python3-certbot-nginx mariadb-client rclone openssl)
 [[ "$DB_MODE" == local ]] && PACKAGES+=(mariadb-server)
 apt-get install -y "${PACKAGES[@]}"
 install_latest_ffmpeg
@@ -225,6 +225,7 @@ systemctl daemon-reload
 install -o root -g root -m 0750 scripts/cert-helper.php /usr/local/sbin/media-panel-cert-helper
 install -o root -g root -m 0750 scripts/xui-sql-helper.php /usr/local/sbin/orionx-xui-sql-helper
 install -o root -g root -m 0750 scripts/db-firewall-helper.php /usr/local/sbin/orionx-db-firewall-helper
+install -o root -g root -m 0750 scripts/waf-helper.php /usr/local/sbin/orionx-waf-helper
 install -o root -g root -m 0440 config/media-panel-sudoers /etc/sudoers.d/media-panel-certificates
 visudo -cf /etc/sudoers.d/media-panel-certificates
 ln -sfn /etc/nginx/sites-available/licensed-media-panel /etc/nginx/sites-enabled/licensed-media-panel
