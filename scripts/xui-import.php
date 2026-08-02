@@ -42,6 +42,7 @@ function createSql(PDO $source,string $table,array $map): string {
         $referencePattern='/(\bREFERENCES\s+)'.preg_quote(id($old),'/').'/i';
         $sql=(string)preg_replace($referencePattern,'$1'.id($new),$sql);
     }
+    $sql=(string)preg_replace('/\butf8mb4_general_ci\b/i','utf8mb4_unicode_ci',$sql);
     return $sql;
 }
 
