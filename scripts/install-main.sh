@@ -23,6 +23,19 @@ DB_DATABASE="${DB_DATABASE:-licensed_media_panel}"
 DB_USERNAME="${DB_USERNAME:-panel_app}"
 DB_PASSWORD="${DB_PASSWORD:-}"
 INITIAL_INSTALL=0
+CREDENTIAL_FILE=/root/.media-panel-initial-credentials
+
+installation_exit() {
+  local exit_code=$?
+  if [[ $exit_code -ne 0 && -f "$CREDENTIAL_FILE" ]]; then
+    echo
+    echo "La instalación se interrumpió después de crear el administrador."
+    cat "$CREDENTIAL_FILE"
+    echo "Las credenciales se conservarán hasta que la instalación termine correctamente."
+  fi
+  return "$exit_code"
+}
+trap installation_exit EXIT
 
 install_latest_ffmpeg() {
   local releases_url=https://ffmpeg.org/releases
@@ -94,16 +107,23 @@ if ! apt-cache show "php${PHP_VERSION}-fpm" >/dev/null 2>&1; then
   apt-get update
 fi
 
-PACKAGES=(nginx libnginx-mod-http-modsecurity modsecurity-crs redis-server "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-mysql" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" "php${PHP_VERSION}-curl" "php${PHP_VERSION}-redis" "php${PHP_VERSION}-intl" "php${PHP_VERSION}-zip" unzip composer supervisor cron sudo ufw nfs-common cifs-utils certbot python3-certbot-nginx mariadb-client rclone openssl)
+PACKAGES=(nginx libnginx-mod-http-modsecurity modsecurity-crs redis-server "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-mysql" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" "php${PHP_VERSION}-curl" "php${PHP_VERSION}-redis" "php${PHP_VERSION}-intl" "php${PHP_VERSION}-zip" unzip supervisor cron sudo ufw nfs-common cifs-utils certbot python3-certbot-nginx mariadb-client rclone openssl)
 [[ "$DB_MODE" == local ]] && PACKAGES+=(mariadb-server)
 apt-get install -y "${PACKAGES[@]}"
 install_latest_ffmpeg
+
+COMPOSER_INSTALLER="$(mktemp)"
+COMPOSER_SIGNATURE="$(curl --proto '=https' --tlsv1.2 -fsSL https://composer.github.io/installer.sig)"
+curl --proto '=https' --tlsv1.2 -fsSL https://getcomposer.org/installer -o "$COMPOSER_INSTALLER"
+[[ "$(openssl dgst -sha384 "$COMPOSER_INSTALLER" | awk '{print $NF}')" == "$COMPOSER_SIGNATURE" ]] || { rm -f "$COMPOSER_INSTALLER"; echo "ERROR: firma del instalador de Composer inválida."; exit 1; }
+"/usr/bin/php${PHP_VERSION}" "$COMPOSER_INSTALLER" --quiet --install-dir=/usr/local/bin --filename=composer
+rm -f "$COMPOSER_INSTALLER"
 
 id "$APP_USER" >/dev/null 2>&1 || useradd --system --home "$APP_DIR" --shell /usr/sbin/nologin "$APP_USER"
 install -d -o "$APP_USER" -g www-data -m 0750 "$APP_DIR"
 cp -a "$SOURCE_DIR/." "$APP_DIR/"
 cd "$APP_DIR"
-composer install --no-dev --optimize-autoloader --no-interaction
+COMPOSER_ALLOW_SUPERUSER=1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
 if [[ ! -f .env ]]; then
   INITIAL_INSTALL=1
@@ -184,7 +204,6 @@ chmod 0640 "$APP_DIR/.env"
 sudo -u "$APP_USER" /usr/bin/php scripts/migrate.php
 if [[ $INITIAL_INSTALL -eq 1 ]]; then
   sudo -u "$APP_USER" /usr/bin/php scripts/create-admin.php "$ADMIN_EMAIL" "$ADMIN_PASSWORD"
-  CREDENTIAL_FILE=/root/.media-panel-initial-credentials
   printf 'Administrador: %s\nContraseña inicial: %s\n' "$ADMIN_EMAIL" "$ADMIN_PASSWORD" > "$CREDENTIAL_FILE"
   chmod 0600 "$CREDENTIAL_FILE"
 fi
@@ -231,7 +250,7 @@ visudo -cf /etc/sudoers.d/media-panel-certificates
 ln -sfn /etc/nginx/sites-available/licensed-media-panel /etc/nginx/sites-enabled/licensed-media-panel
 rm -f /etc/nginx/sites-enabled/default
 
-SSHD_PORT="$(sshd -T 2>/dev/null | awk '$1=="port"{print $2;exit}')"
+SSHD_PORT="$(sshd -T 2>/dev/null | awk '$1=="port"{print $2;exit}' || true)"
 [[ "$SSHD_PORT" =~ ^[0-9]+$ ]] || SSHD_PORT=35222
 ufw allow "${SSHD_PORT}/tcp"
 ufw allow 'Nginx Full'
@@ -251,6 +270,7 @@ curl --fail --silent --show-error --max-time 10 --resolve "${PANEL_DOMAIN}:443:1
 
 echo
 echo "============================================================"
+trap - EXIT
 echo "Panel instalado: https://${PANEL_DOMAIN}"
 if [[ -f /root/.media-panel-initial-credentials ]]; then
   cat /root/.media-panel-initial-credentials
