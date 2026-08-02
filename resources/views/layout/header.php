@@ -13,12 +13,12 @@
 $groups=[
  ['label'=>'Dashboard','icon'=>'⌁','href'=>'/','items'=>[]],
  ['label'=>'Servidores','icon'=>'▤','items'=>[['Servidores','/servers'],['Proxies','/servers/proxies']]],
- ['label'=>'Usuarios','icon'=>'♟','items'=>[['Administradores','/users'],['Grupos de seguridad','/security/groups'],['Revendedores','/resellers']]],
+ ['label'=>'Usuarios','icon'=>'♟','items'=>[['Agregar usuario','/users#agregar-usuario'],['Manejar usuarios','/users#manejar-usuarios']]],
  ['label'=>'Dispositivos MAG','icon'=>'▣','href'=>'/mag-devices','items'=>[]],
  ['label'=>'Líneas','icon'=>'▣','items'=>[['Cuentas finales','/accounts'],['Conexiones activas','/sessions'],['Packages','/packages']]],
  ['label'=>'Contenido','icon'=>'▶','items'=>[['Canales en vivo','/live'],['Ingest RTMP','/rtmp'],['Películas','/movies'],['Edición masiva VOD','/media/bulk'],['Eliminación masiva VOD','/media/delete'],['EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']]],
  ['label'=>'Bouquets','icon'=>'◉','items'=>[['Administrar bouquets','/bouquets'],['Administrar packages','/packages']]],
- ['label'=>'Administración','icon'=>'⌕','items'=>[['Instalar y actualizar balanceadores','/deployments'],['Certificados TLS','/certificates'],['Mover contenido entre servidores','/servers/move-content'],['Ajustes generales','/settings'],['Web Application Firewall','/security/waf'],['Seguridad de base de datos','/security/database'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import'],['IP bloqueadas','/security/ip-blocks'],['Logs y auditoría','/logs']]],
+ ['label'=>'Administración','icon'=>'⌕','items'=>[['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Instalar y actualizar balanceadores','/deployments'],['Certificados TLS','/certificates'],['Mover contenido entre servidores','/servers/move-content'],['Ajustes generales','/settings'],['Web Application Firewall','/security/waf'],['Seguridad de base de datos','/security/database'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import'],['IP bloqueadas','/security/ip-blocks'],['Logs y auditoría','/logs']]],
 ];?>
 <input id="nav-toggle" type="checkbox" class="sr-only"><label for="nav-toggle" class="md:hidden ml-auto cursor-pointer border border-slate-700 px-3 py-2 rounded" aria-label="Abrir menú">☰</label>
 <div class="nav-links basis-full md:basis-auto md:ml-0 md:flex md:flex-1 flex-col md:flex-row md:items-stretch self-stretch pb-3 md:pb-0">
