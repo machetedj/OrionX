@@ -9,7 +9,8 @@ final readonly class XuiImportController
  public function store(Request $r):void{$this->allow();$this->attempt(fn()=> $this->service->save($r->input));}
  public function test(Request $r):void{$this->allow();$this->attempt(fn()=> $this->service->test($r->int('id')));}
  public function run(Request $r):void{$this->allow();$this->attempt(fn()=> $this->service->queue($r->int('id'),filter_var($r->input['replace']??false,FILTER_VALIDATE_BOOL)));}
- public function upload(Request $r):void{$this->allow();$this->attempt(fn()=> $this->service->upload($_FILES['sql_dump']??[]));}
+ public function upload(Request $r):void{$this->allow();$this->attempt(function():void{set_time_limit(0);ignore_user_abort(true);$id=$this->service->upload($_FILES['sql_dump']??[]);$this->service->runUpload($id);});}
+ public function processUpload(Request $r):void{$this->allow();$this->attempt(function()use($r):void{set_time_limit(0);ignore_user_abort(true);$this->service->runUpload($r->int('id'));});}
  public function detail(Request $r):void{$this->allow();Response::json(['tables'=>$this->repo->tables($r->int('id'))]);}
  public function conflicts(Request $r):void{$this->allow();Response::json(['conflicts'=>$this->repo->conflicts($r->int('id'))]);}
  private function attempt(callable $fn):never{try{$fn();Response::redirect('/xui-import');}catch(Throwable $e){http_response_code(422);exit(htmlspecialchars($e->getMessage(),ENT_QUOTES,'UTF-8'));}}
