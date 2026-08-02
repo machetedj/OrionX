@@ -1,5 +1,5 @@
 <div x-data="{fps:{},errors:{},probe(id,port,csrf){this.errors[id]='';fetch('/deployments/fingerprint',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'_csrf='+encodeURIComponent(csrf)+'&server_id='+id+'&port='+port}).then(r=>r.json()).then(r=>{if(r.ok)this.fps[id]=r.fingerprint;else this.errors[id]=r.error})}}" class="space-y-6">
- <div><h1 class="text-3xl font-bold">Instalación y sincronización</h1><p class="text-slate-400">Despliegues SSH como root, con huella verificada y PHP 8.5 configurable.</p></div>
+ <div class="flex flex-wrap justify-between gap-3"><div><h1 class="text-3xl font-bold">Instalar balanceador</h1><p class="text-slate-400">Instalación remota como root por SSH 35222, con huella verificada, secretos cifrados y progreso auditable.</p></div><a href="/servers" class="bg-blue-700 px-4 py-2 rounded self-start">Manejar servidores</a></div>
  <div class="grid gap-5">
  <?php foreach($servers as $server):?>
   <article class="bg-slate-900 border border-slate-800 rounded-xl p-5">
