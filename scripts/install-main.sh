@@ -232,7 +232,7 @@ ln -sfn /etc/nginx/sites-available/licensed-media-panel /etc/nginx/sites-enabled
 rm -f /etc/nginx/sites-enabled/default
 
 SSHD_PORT="$(sshd -T 2>/dev/null | awk '$1=="port"{print $2;exit}')"
-[[ "$SSHD_PORT" =~ ^[0-9]+$ ]] || SSHD_PORT=22
+[[ "$SSHD_PORT" =~ ^[0-9]+$ ]] || SSHD_PORT=35222
 ufw allow "${SSHD_PORT}/tcp"
 ufw allow 'Nginx Full'
 ufw deny 3306/tcp

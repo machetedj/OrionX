@@ -17,7 +17,7 @@ final readonly class SshProvisioner
 
     public function __construct(private PDO $db, private DeviceCredentialCipher $cipher, private BalancerBootstrap $bootstrap) {}
 
-    public function fingerprint(string $host, int $port = 22): string
+    public function fingerprint(string $host, int $port = 35222): string
     {
         $this->validateHost($host, $port);
         $ssh = new SSH2($host, $port, 10);

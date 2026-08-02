@@ -6,7 +6,7 @@
    <div class="flex justify-between"><div><h2 class="text-xl font-bold"><?=htmlspecialchars($server['name'])?></h2><p class="text-slate-400"><?=htmlspecialchars($server['private_ip']?:$server['public_ip'])?> · <?=htmlspecialchars($server['region']??'')?></p></div><span class="<?=$server['ssh_configured']?'text-emerald-400':'text-amber-400'?>"><?=$server['ssh_configured']?'SSH configurado':'Pendiente SSH'?></span></div>
    <form method="post" action="/deployments/credentials" class="grid md:grid-cols-4 gap-3 mt-4">
     <?=$csrf->field()?><input type="hidden" name="server_id" value="<?=$server['id']?>">
-    <input x-ref="port<?=$server['id']?>" type="number" min="1" max="65535" name="port" value="<?=$server['ssh_port']?:22?>" class="bg-slate-800 p-2 rounded" placeholder="Puerto">
+    <input x-ref="port<?=$server['id']?>" type="number" min="1" max="65535" name="port" value="<?=$server['ssh_port']?:35222?>" class="bg-slate-800 p-2 rounded" placeholder="Puerto SSH">
     <input name="ssh_user" value="<?=htmlspecialchars($server['ssh_user']??'root')?>" class="bg-slate-800 p-2 rounded" placeholder="Usuario SSH (root permitido)">
     <button type="button" @click="probe(<?=$server['id']?>,$refs.port<?=$server['id']?>.value,'<?=rawurlencode($csrf->token())?>')" class="bg-indigo-700 rounded">Obtener huella</button>
     <input required name="fingerprint" x-model="fps[<?=$server['id']?>]" value="<?=htmlspecialchars($server['host_fingerprint']??'')?>" class="bg-slate-800 p-2 rounded" placeholder="Huella SSH confirmada">
