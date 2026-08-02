@@ -1,1 +1,1 @@
-</main><footer class="max-w-7xl mx-auto p-6 text-xs text-slate-500 border-t border-slate-900 mt-8"><span class="text-blue-400 font-semibold">OrionX</span> · Solo para contenido propio o debidamente licenciado.</footer></body></html>
+</main></body></html>
