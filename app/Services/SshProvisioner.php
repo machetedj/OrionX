@@ -65,6 +65,7 @@ final readonly class SshProvisioner
                 'media-balancer.service' => $assets . '/media-balancer.service',
                 'media-balancer.timer' => $assets . '/media-balancer.timer',
                 'nginx-balancer.conf' => $assets . '/nginx-balancer.conf',
+                'orionx-performance.conf' => $assets . '/orionx-performance.conf',
             ];
             foreach ($bundleFiles as $file => $localPath) {
                 if (!$sftp->put(self::REMOTE_DIRECTORY . '/' . $file, $localPath, SFTP::SOURCE_LOCAL_FILE)) {

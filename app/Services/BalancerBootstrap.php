@@ -59,6 +59,14 @@ install -o root -g media-balancer -m 0750 "$BUNDLE_DIR/rtmp-task.php" "$INSTALL_
 install -o root -g media-balancer -m 0640 "$BUNDLE_DIR/agent.env" "$INSTALL_DIR/agent.env"
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.service" /etc/systemd/system/media-balancer.service
 install -o root -g root -m 0644 "$BUNDLE_DIR/media-balancer.timer" /etc/systemd/system/media-balancer.timer
+modprobe tcp_bbr
+sysctl net.ipv4.tcp_available_congestion_control | grep -qw bbr || { echo "El kernel no ofrece BBR"; exit 1; }
+printf 'tcp_bbr\n' > /etc/modules-load.d/orionx-bbr.conf
+[[ -f /etc/sysctl.d/99-orionx-performance.conf ]] && cp -a /etc/sysctl.d/99-orionx-performance.conf "/etc/sysctl.d/99-orionx-performance.conf.bak.$(date +%s)"
+install -o root -g root -m 0644 "$BUNDLE_DIR/orionx-performance.conf" /etc/sysctl.d/99-orionx-performance.conf
+sysctl -p /etc/sysctl.d/99-orionx-performance.conf
+[[ "$(sysctl -n net.ipv4.tcp_congestion_control)" == bbr ]] || { echo "No se pudo activar BBR"; exit 1; }
+[[ "$(sysctl -n net.core.default_qdisc)" == fq ]] || { echo "No se pudo activar FQ"; exit 1; }
 sed "s/__PHP_VERSION__/${PHP_VERSION}/g" "$BUNDLE_DIR/nginx-balancer.conf" > /etc/nginx/sites-available/media-balancer
 chown root:root /etc/nginx/sites-available/media-balancer; chmod 0644 /etc/nginx/sites-available/media-balancer
 install -d -o root -g www-data -m 0750 /srv/orionx/media
