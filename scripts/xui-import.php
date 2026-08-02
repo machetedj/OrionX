@@ -23,7 +23,9 @@ function connection(bool $source): PDO {
     $p=$source?'XUI_':'';
     foreach(['DB_HOST','DB_DATABASE','DB_USERNAME'] as $key) if(config($p.$key)===null) throw new RuntimeException("Falta {$p}{$key} en la configuración del proceso");
     $dsn=sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',config($p.'DB_HOST'),config($p.'DB_PORT','3306'),config($p.'DB_DATABASE'));
-    return new PDO($dsn,config($p.'DB_USERNAME'),config($p.'DB_PASSWORD',''),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
+    $options=[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false];
+    if($source)$options[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY]=false;
+    return new PDO($dsn,config($p.'DB_USERNAME'),config($p.'DB_PASSWORD',''),$options);
 }
 
 function id(string $name): string { return '`'.str_replace('`','``',$name).'`'; }
@@ -82,21 +84,23 @@ try {
         $columns=array_map('strval',$columnQuery->fetchAll(PDO::FETCH_COLUMN));
         $columnSql=implode(',',array_map('id',$columns));
         $insert=$destination->prepare('INSERT INTO '.id($target).' ('.$columnSql.') VALUES ('.implode(',',array_fill(0,count($columns),'?')).')');
-        $offset=0;
+        $copied=0;$batch=0;
         $hash=hash_init('sha256');
-        while($offset<$sourceRows){
-            $rows=$source->query('SELECT * FROM '.id($table).' LIMIT '.$batchSize.' OFFSET '.$offset)->fetchAll(PDO::FETCH_NUM);
-            if(!$rows) break;
-            $destination->beginTransaction();
-            try {
-                foreach($rows as $row){
-                    $insert->execute($row);
-                    hash_update($hash,(string)json_encode($row,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PARTIAL_OUTPUT_ON_ERROR)."\n");
-                }
-                $destination->commit();
-            } catch(Throwable $e){ if($destination->inTransaction()) $destination->rollBack(); throw $e; }
-            $offset+=count($rows);
+        $read=$source->query('SELECT * FROM '.id($table));
+        try {
+            while($row=$read->fetch(PDO::FETCH_NUM)){
+                if($batch===0)$destination->beginTransaction();
+                $insert->execute($row);$copied++;$batch++;
+                hash_update($hash,(string)json_encode($row,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PARTIAL_OUTPUT_ON_ERROR)."\n");
+                if($batch<$batchSize)continue;
+                $destination->commit();$batch=0;
+                $destination->prepare('UPDATE xui_import_tables SET copied_rows=? WHERE import_id=? AND source_table=?')->execute([$copied,$importId,$table]);
+                $destination->prepare('UPDATE xui_imports SET rows_copied=? WHERE id=?')->execute([$totalRows+$copied,$importId]);
+            }
+            if($destination->inTransaction())$destination->commit();
+        } catch(Throwable $e){if($destination->inTransaction())$destination->rollBack();throw $e;
         }
+        $read->closeCursor();
         $actual=countRows($destination,$target);
         if($actual!==$sourceRows) throw new RuntimeException("Conteo inválido en {$table}: {$sourceRows} != {$actual}");
         $destination->prepare("UPDATE xui_import_tables SET copied_rows=?,checksum_sha256=?,status='completed',completed_at=NOW() WHERE import_id=? AND source_table=?")->execute([$actual,hash_final($hash),$importId,$table]);
