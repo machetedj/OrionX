@@ -1,4 +1,4 @@
-<?php $uploadStatus=['uploaded'=>'Subido','queued'=>'En cola · esperando procesamiento','restoring'=>'Restaurando base aislada','importing'=>'Importando datos','completed'=>'Completado','failed'=>'Falló']; ?>
+<?php $uploadStatus=['uploaded'=>'Subido','queued'=>'Iniciando importación…','restoring'=>'Restaurando base aislada','importing'=>'Importando datos','completed'=>'Completado','failed'=>'Falló']; ?>
 <div x-data="{resultModalOpen:false,resultRows:[]}" class="space-y-6">
  <div><h1 class="text-3xl font-bold">Importar XUI One</h1><p class="text-slate-400">Copia íntegra y verificable desde un usuario MySQL de solo lectura.</p></div>
  <div class="rounded-xl border border-amber-700/50 bg-amber-950/30 p-4 text-sm"><strong>Antes de comenzar:</strong> crea y prueba un backup de XUI One. El panel nunca necesita permisos de escritura sobre la base original.</div>
