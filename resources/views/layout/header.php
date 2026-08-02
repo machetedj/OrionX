@@ -22,7 +22,7 @@ $groups=[
   ['Series','', [['Importar series y episodios','/libraries'],['Editar episodios múltiples','/media/bulk'],['Eliminar episodios múltiples','/media/delete'],['Manejar series','/libraries']]],
   ['Ingest RTMP','/rtmp'],['Guía TV / EPG','/epg'],['Watch Folders','/libraries'],['Categorías','/categories']
  ]],
- ['label'=>'Bouquets','icon'=>'◉','items'=>[['Administrar bouquets','/bouquets'],['Administrar packages','/packages']]],
+ ['label'=>'Bouquets','icon'=>'◉','items'=>[['Agregar bouquet','/bouquets#agregar-bouquet'],['Manejar bouquets','/bouquets#manejar-bouquets'],['Ordenar bouquets','/bouquets#ordenar-bouquets']]],
  ['label'=>'Administración','icon'=>'⌕','items'=>[['Grupos de seguridad','/security/groups'],['Revendedores','/resellers'],['Instalar y actualizar balanceadores','/deployments'],['Certificados TLS','/certificates'],['Mover contenido entre servidores','/servers/move-content'],['Ajustes generales','/settings'],['Web Application Firewall','/security/waf'],['Seguridad de base de datos','/security/database'],['Backups','/backups'],['Importar XUI (opcional)','/xui-import'],['IP bloqueadas','/security/ip-blocks'],['Logs y auditoría','/logs']]],
 ];?>
 <input id="nav-toggle" type="checkbox" class="sr-only"><label for="nav-toggle" class="md:hidden ml-auto cursor-pointer border border-slate-700 px-3 py-2 rounded" aria-label="Abrir menú">☰</label>
