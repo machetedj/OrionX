@@ -15,7 +15,7 @@ $groups=[
  ['label'=>'Dashboard','icon'=>'⌁','href'=>'/','items'=>[]],
  ['label'=>'Servidores','icon'=>'▤','items'=>[['Servidores','/servers'],['Proxies','/servers/proxies']]],
  ['label'=>'Usuarios','icon'=>'♟','items'=>[['Agregar usuario','/users#agregar-usuario'],['Manejar usuarios','/users#manejar-usuarios']]],
- ['label'=>'Líneas','icon'=>'▣','items'=>[['Líneas de usuario','', [['Agregar línea','/accounts#agregar-linea'],['Manejar líneas','/accounts#manejar-lineas']]],['Dispositivos MAG','', [['Agregar dispositivo MAG','/mag-devices#agregar-mag'],['Manejar dispositivos MAG','/mag-devices#manejar-mag']]],['Conexiones activas','/sessions'],['Packages','/packages']]],
+ ['label'=>'Líneas','icon'=>'▣','items'=>[['Líneas de usuario','', [['Agregar línea','/accounts#agregar-linea'],['Manejar líneas','/accounts#manejar-lineas']]],['Dispositivos MAG','', [['Agregar dispositivo MAG','/mag-devices#agregar-mag'],['Manejar dispositivos MAG','/mag-devices#manejar-mag']]],['Conexiones activas','/sessions']]],
  ['label'=>'Contenido','icon'=>'▶','items'=>[
   ['Streams','', [['Agregar stream','/live#agregar-stream'],['Importar múltiples','/live#importar-streams'],['Importar y revisar','/libraries'],['Manejar streams','/live#manejar-streams']]],
   ['Canales creados','/live'],
