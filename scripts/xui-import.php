@@ -36,8 +36,12 @@ function createSql(PDO $source,string $table,array $map): string {
     $row=$source->query('SHOW CREATE TABLE '.id($table))->fetch(PDO::FETCH_NUM);
     if(!$row||!isset($row[1])) throw new RuntimeException("No se pudo leer {$table}");
     $sql=(string)$row[1];
-    uksort($map,static fn(string $a,string $b): int=>strlen($b)<=>strlen($a));
-    foreach($map as $old=>$new) $sql=str_replace(id($old),id($new),$sql);
+    $createPattern='/^(CREATE TABLE\s+)'.preg_quote(id($table),'/').'/i';
+    $sql=(string)preg_replace($createPattern,'$1'.id($map[$table]),$sql,1);
+    foreach($map as $old=>$new){
+        $referencePattern='/(\bREFERENCES\s+)'.preg_quote(id($old),'/').'/i';
+        $sql=(string)preg_replace($referencePattern,'$1'.id($new),$sql);
+    }
     return $sql;
 }
 
