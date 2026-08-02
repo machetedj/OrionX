@@ -59,6 +59,7 @@ final readonly class SshProvisioner
             $bundleFiles = [
                 'agent.php' => $assets . '/agent.php',
                 'media-task.php' => $assets . '/media-task.php',
+                'media-gateway.php' => $assets . '/media-gateway.php',
                 'rtmp-agent.php' => $assets . '/rtmp-agent.php',
                 'rtmp-task.php' => $assets . '/rtmp-task.php',
                 'media-balancer.service' => $assets . '/media-balancer.service',
@@ -79,10 +80,11 @@ final readonly class SshProvisioner
                 throw new RuntimeException('APP_URL debe usar HTTPS antes de instalar balanceadores.');
             }
             $agentEnvironment = sprintf(
-                "MAIN_URL=\"%s\"\nNODE_KEY=\"%s\"\nNODE_SECRET=\"%s\"\nAGENT_VERSION=\"%s\"\nPHP_VERSION=\"%s\"\n",
+                "MAIN_URL=\"%s\"\nNODE_KEY=\"%s\"\nNODE_SECRET=\"%s\"\nMEDIA_SIGNING_KEY=\"%s\"\nAGENT_VERSION=\"%s\"\nPHP_VERSION=\"%s\"\n",
                 $mainUrl,
                 $deployment['api_key_id'],
                 $this->cipher->decrypt($deployment['api_secret_ciphertext']),
+                (string)($_ENV['MEDIA_SIGNING_KEY']??''),
                 $deployment['version'],
                 (string) ($_ENV['BALANCER_PHP_VERSION'] ?? '8.5')
             );

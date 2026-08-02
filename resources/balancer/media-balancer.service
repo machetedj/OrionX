@@ -11,7 +11,7 @@ ExecStartPost=/usr/bin/php /opt/media-balancer/rtmp-agent.php
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
-ReadWritePaths=/etc/letsencrypt /var/lib/letsencrypt /var/log/letsencrypt /etc/nginx
+ReadWritePaths=/etc/letsencrypt /var/lib/letsencrypt /var/log/letsencrypt /etc/nginx /srv/orionx/media
 
 [Install]
 WantedBy=multi-user.target
