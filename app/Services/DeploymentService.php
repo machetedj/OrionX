@@ -24,6 +24,45 @@ final readonly class DeploymentService
         return $this->ssh->fingerprint($this->serverHost($serverId), $port);
     }
 
+    public function fingerprintHost(string $host, int $port): string
+    {
+        if (!filter_var($host, FILTER_VALIDATE_IP) || $port < 1 || $port > 65535) {
+            throw new RuntimeException('IP o puerto SSH inválido.');
+        }
+        return $this->ssh->fingerprint($host, $port);
+    }
+
+    public function installNew(array $input): int
+    {
+        $name = trim((string) ($input['name'] ?? ''));
+        $host = trim((string) ($input['server_ip'] ?? ''));
+        $port = (int) ($input['port'] ?? 35222);
+        $user = trim((string) ($input['ssh_user'] ?? 'root'));
+        $password = (string) ($input['ssh_password'] ?? '');
+        $privateKey = trim((string) ($input['private_key'] ?? ''));
+        $fingerprint = trim((string) ($input['fingerprint'] ?? ''));
+        if ($name === '' || mb_strlen($name) > 120) throw new RuntimeException('Nombre del balanceador inválido.');
+        if (!filter_var($host, FILTER_VALIDATE_IP)) throw new RuntimeException('IP del balanceador inválida.');
+        if ($user !== 'root') throw new RuntimeException('La instalación inicial debe ejecutarse como root.');
+        if ($password === '' && $privateKey === '') throw new RuntimeException('Proporciona la contraseña root o una clave privada.');
+        $actualFingerprint = $this->fingerprintHost($host, $port);
+        if ($fingerprint === '' || !hash_equals($actualFingerprint, $fingerprint)) throw new RuntimeException('Confirma primero la huella SSH del servidor.');
+        $exists = $this->db->prepare('SELECT 1 FROM servers WHERE public_ip=? OR private_ip=?');
+        $exists->execute([$host, $host]);
+        if ($exists->fetchColumn()) throw new RuntimeException('Ya existe un servidor registrado con esa IP.');
+        $this->db->prepare("INSERT INTO servers(name,public_ip,status,max_capacity,weight,priority) VALUES(?,?,'pending',1000,100,100)")->execute([$name, $host]);
+        $id = (int) $this->db->lastInsertId();
+        try {
+            $this->saveCredentials($id, $port, $user, $fingerprint, $privateKey, $password);
+            $this->request($id, 'install');
+        } catch (\Throwable $e) {
+            $this->db->prepare('DELETE FROM servers WHERE id=?')->execute([$id]);
+            throw $e;
+        }
+        $this->audit->record('server.installation_started', 'server', $id, ['host'=>$host,'port'=>$port]);
+        return $id;
+    }
+
     public function saveCredentials(int $serverId, int $port, string $user, string $fingerprint, string $privateKey, string $password): void
     {
         $host = $this->serverHost($serverId);

@@ -78,6 +78,8 @@ $r->get('/certificates',[CertificateController::class,'index'],[AuthMiddleware::
 $r->post('/certificates',[CertificateController::class,'store'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->get('/deployments',[DeploymentController::class,'index'],[AuthMiddleware::class]);
 $r->post('/deployments/fingerprint',[DeploymentController::class,'fingerprint'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/deployments/fingerprint-host',[DeploymentController::class,'fingerprintHost'],[AuthMiddleware::class,CsrfMiddleware::class]);
+$r->post('/deployments/install',[DeploymentController::class,'install'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/deployments/credentials',[DeploymentController::class,'credentials'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/deployments/run',[DeploymentController::class,'deploy'],[AuthMiddleware::class,CsrfMiddleware::class]);
 $r->post('/deployments/cutover',[DeploymentController::class,'cutover'],[AuthMiddleware::class,CsrfMiddleware::class]);
