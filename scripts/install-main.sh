@@ -266,7 +266,8 @@ supervisorctl update
 echo "TLS temporal configurado para la IP. El dominio y Let's Encrypt se administran después desde el dashboard."
 
 sudo -u "$APP_USER" /usr/bin/php scripts/verify-installation.php
-curl --fail --silent --show-error --max-time 10 --resolve "${PANEL_DOMAIN}:443:127.0.0.1" "https://${PANEL_DOMAIN}/login" --insecure >/dev/null
+curl --fail --silent --show-error --max-time 10 --retry 5 --retry-connrefused --retry-delay 1 \
+  --header "Host: ${PANEL_DOMAIN}" "https://127.0.0.1/login" --insecure >/dev/null
 
 echo
 echo "============================================================"
