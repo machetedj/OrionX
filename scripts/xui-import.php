@@ -6,17 +6,24 @@ use Dotenv\Dotenv;
 require dirname(__DIR__).'/vendor/autoload.php';
 Dotenv::createImmutable(dirname(__DIR__))->load();
 
+function config(string $key,?string $default=null): ?string {
+    $process=getenv($key);
+    if($process!==false&&$process!=='') return $process;
+    $value=$_ENV[$key]??$_SERVER[$key]??null;
+    return $value===null||$value===''?$default:(string)$value;
+}
+
 $execute=in_array('--execute',$argv,true);
 $replace=in_array('--replace',$argv,true);
-$prefix=(string)($_ENV['XUI_IMPORT_PREFIX']??'xui_legacy__');
-$batchSize=max(100,min(10000,(int)($_ENV['XUI_IMPORT_BATCH_SIZE']??1000)));
+$prefix=(string)config('XUI_IMPORT_PREFIX','xui_legacy__');
+$batchSize=max(100,min(10000,(int)config('XUI_IMPORT_BATCH_SIZE','1000')));
 if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/',$prefix)) throw new RuntimeException('XUI_IMPORT_PREFIX inválido.');
 
 function connection(bool $source): PDO {
     $p=$source?'XUI_':'';
-    foreach(['DB_HOST','DB_DATABASE','DB_USERNAME'] as $key) if(empty($_ENV[$p.$key])) throw new RuntimeException("Falta {$p}{$key} en .env");
-    $dsn=sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',$_ENV[$p.'DB_HOST'],$_ENV[$p.'DB_PORT']??'3306',$_ENV[$p.'DB_DATABASE']);
-    return new PDO($dsn,$_ENV[$p.'DB_USERNAME'],$_ENV[$p.'DB_PASSWORD']??'',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
+    foreach(['DB_HOST','DB_DATABASE','DB_USERNAME'] as $key) if(config($p.$key)===null) throw new RuntimeException("Falta {$p}{$key} en la configuración del proceso");
+    $dsn=sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',config($p.'DB_HOST'),config($p.'DB_PORT','3306'),config($p.'DB_DATABASE'));
+    return new PDO($dsn,config($p.'DB_USERNAME'),config($p.'DB_PASSWORD',''),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
 }
 
 function id(string $name): string { return '`'.str_replace('`','``',$name).'`'; }
@@ -36,8 +43,8 @@ function createSql(PDO $source,string $table,array $map): string {
 
 $source=connection(true);
 $destination=connection(false);
-$sameHost=($_ENV['XUI_DB_HOST']??'')===($_ENV['DB_HOST']??'');
-if($sameHost&&($_ENV['XUI_DB_DATABASE']??'')===($_ENV['DB_DATABASE']??'')) throw new RuntimeException('Origen y destino deben ser bases distintas.');
+$sameHost=config('XUI_DB_HOST','')===config('DB_HOST','');
+if($sameHost&&config('XUI_DB_DATABASE','')===config('DB_DATABASE','')) throw new RuntimeException('Origen y destino deben ser bases distintas.');
 $tables=array_map('strval',$source->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_COLUMN));
 if(!$tables) throw new RuntimeException('La base XUI no contiene tablas.');
 $source->exec('SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ');
@@ -49,9 +56,9 @@ echo 'Modo: '.($execute?'IMPORTACIÓN':'AUDITORÍA (sin cambios)').PHP_EOL;
 foreach($tables as $table) echo sprintf("  %-36s %12d -> %s\n",$table,countRows($source,$table),$map[$table]);
 if(!$execute){ $source->rollBack(); echo "Usa --execute para copiar; --replace sustituye una réplica anterior.\n"; exit(0); }
 
-$fingerprint=hash('sha256',($_ENV['XUI_DB_DATABASE']??'')."\n".implode("\n",$tables));
+$fingerprint=hash('sha256',config('XUI_DB_DATABASE','')."\n".implode("\n",$tables));
 $track=$destination->prepare('INSERT INTO xui_imports(source_fingerprint,source_database,table_prefix,tables_total) VALUES(?,?,?,?)');
-$track->execute([$fingerprint,$_ENV['XUI_DB_DATABASE'],$prefix,count($tables)]);
+$track->execute([$fingerprint,config('XUI_DB_DATABASE'),$prefix,count($tables)]);
 $importId=(int)$destination->lastInsertId();
 $totalRows=0;
 $completed=0;
