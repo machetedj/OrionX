@@ -259,6 +259,8 @@ ufw --force enable
 
 nginx -t
 systemctl enable --now nginx redis-server "php${PHP_VERSION}-fpm" supervisor cron
+systemctl restart "php${PHP_VERSION}-fpm"
+systemctl reload nginx
 systemctl enable --now orionx-security-bot.timer
 supervisorctl reread
 supervisorctl update
