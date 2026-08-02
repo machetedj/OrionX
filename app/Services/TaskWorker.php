@@ -4,12 +4,13 @@ namespace App\Services;
 use PDO;use RuntimeException;use Throwable;
 final readonly class TaskWorker
 {
- public function __construct(private TaskQueueService $queue,private LibraryScanner $scanner,private TmdbService $tmdb,private EpgService $epg,private StreamMonitorService $streams,private BackupService $backups,private ServerHealthService $health,private CertificateIssuer $certificates,private SshProvisioner $provisioner,private XuiImportService $xui,private RemoteMediaService $remoteMedia,private WafService $waf,private PDO $db){}
+ public function __construct(private TaskQueueService $queue,private LibraryScanner $scanner,private TmdbService $tmdb,private EpgService $epg,private StreamMonitorService $streams,private BackupService $backups,private ServerHealthService $health,private CertificateIssuer $certificates,private SshProvisioner $provisioner,private XuiImportService $xui,private RemoteMediaService $remoteMedia,private MediaStatusService $mediaStatus,private WafService $waf,private PDO $db){}
  public function runOne(string $worker):bool{$item=$this->queue->pop();if(!$item)return false;$job=$this->queue->reserve($item['id'],$worker);if(!$job)return false;try{$result=$this->handle($job);$this->queue->complete($job['id'],$result);return true;}catch(Throwable $e){$this->queue->fail($job,$e);return true;}}
  private function handle(array $job):array{$p=$job['payload'];return match($job['type']){
   'import_epg'=>$this->epg->import((int)($p['source_id']??0)),
   'import_movies'=>$this->scanner->scan((int)($p['library_id']??0),'movie'),
   'import_series'=>$this->scanner->scan((int)($p['library_id']??0),'series'),
+  'validate_media_file'=>$this->mediaStatus->validate((int)($p['file_id']??0)),
   'query_tmdb'=>['tmdb'=>$this->tmdb->details((string)($p['type']??'movie'),(int)($p['tmdb_id']??0),(string)($p['language']??'es-ES'))],
   'test_stream'=>$this->streams->check((int)($p['source_id']??0)),
   'create_backup'=>$this->backups->run((int)($p['run_id']??0)),

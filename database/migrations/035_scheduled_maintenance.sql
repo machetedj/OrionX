@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS scheduler_runs(id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,status ENUM('running','completed','failed') NOT NULL DEFAULT 'running',summary JSON NULL,error_message TEXT NULL,started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,completed_at TIMESTAMP NULL,INDEX(status,started_at)) ENGINE=InnoDB;
