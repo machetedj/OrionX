@@ -11,6 +11,7 @@ final readonly class XuiImportController
  public function run(Request $r):void{$this->allow();$this->attempt(fn()=> $this->service->queue($r->int('id'),filter_var($r->input['replace']??false,FILTER_VALIDATE_BOOL)));}
  public function upload(Request $r):void{$this->allow();try{$id=$this->service->upload($_FILES['sql_dump']??[]);}catch(Throwable $e){http_response_code(422);exit(htmlspecialchars($e->getMessage(),ENT_QUOTES,'UTF-8'));}$this->finishBrowserRequest();$this->processInBackground($id);}
  public function processUpload(Request $r):void{$this->allow();$id=$r->int('id');$this->finishBrowserRequest();$this->processInBackground($id);}
+ public function convertLines(Request $r):void{$this->allow();$id=$r->int('id');$this->finishBrowserRequest();try{$this->service->convertUploadedLines($id);}catch(Throwable $e){error_log('XUI lines #'.$id.': '.$e->getMessage());}}
  public function detail(Request $r):void{$this->allow();Response::json(['tables'=>$this->repo->tables($r->int('id'))]);}
  public function conflicts(Request $r):void{$this->allow();Response::json(['conflicts'=>$this->repo->conflicts($r->int('id'))]);}
  private function attempt(callable $fn):never{try{$fn();Response::redirect('/xui-import');}catch(Throwable $e){http_response_code(422);exit(htmlspecialchars($e->getMessage(),ENT_QUOTES,'UTF-8'));}}
